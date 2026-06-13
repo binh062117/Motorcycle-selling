@@ -1,68 +1,74 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<c:set var="pageTitle" value="ĐĂNG KÝ NHẬN XE & LÊN LỊCH HẸN" />
 <%@ include file="/common/header.jsp" %>
 
-<main class="pt-32 pb-24 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
-    <form action="${pageContext.request.contextPath}/order-history.jsp" method="post" class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
+<main class="py-5 container-fluid px-4 max-w-container-max mx-auto">
+    <form action="${pageContext.request.contextPath}/order-history.jsp" method="post" class="row g-4 needs-validation-custom" novalidate>
         
-        <!-- Left Column: Booking Form (col-span-8) -->
-        <div class="lg:col-span-8 space-y-10">
-            <header class="space-y-4">
-                <h1 class="font-headline-lg text-headline-sm md:text-headline-lg text-on-surface tracking-tight uppercase">Đăng Ký Nhận Xe & Lên Lịch Hẹn</h1>
-                <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+        <!-- Left Column: Booking Form (col-lg-8) -->
+        <div class="col-12 col-lg-8">
+            <header class="mb-4">
+                <h1 class="font-heading text-uppercase tracking-tight fs-3 mb-2">Đăng Ký Nhận Xe & Lên Lịch Hẹn</h1>
+                <p class="text-secondary small max-w-2xl mb-0">
                     Hoàn tất thông số đăng ký nhận xe phân khối lớn và thiết lập lịch hẹn lái thử hoặc tư vấn chuyên môn trực tiếp tại showroom.
                 </p>
             </header>
             
             <!-- Progress Tracker -->
-            <div class="flex items-center gap-4 w-full">
-                <div class="flex-1 flex flex-col gap-2">
-                    <div class="h-1 bg-primary-container rounded-full"></div>
-                    <span class="font-label-md text-label-md text-primary-container uppercase">Bước 1: Chọn Showroom</span>
+            <div class="row g-3 mb-5">
+                <div class="col-4">
+                    <div class="bg-danger rounded" style="height: 4px;"></div>
+                    <span class="font-heading text-danger text-uppercase small tracking-wider d-block mt-2">Bước 1: Showroom</span>
                 </div>
-                <div class="flex-1 flex flex-col gap-2">
-                    <div class="h-1 bg-surface-container-highest rounded-full transition-colors duration-500" id="step-bar-2"></div>
-                    <span class="font-label-md text-label-md text-on-surface-variant uppercase" id="step-lbl-2">Bước 2: Lên lịch hẹn</span>
+                <div class="col-4">
+                    <div id="step-bar-2" class="bg-secondary rounded bg-opacity-25" style="height: 4px;"></div>
+                    <span id="step-lbl-2" class="font-heading text-muted text-uppercase small tracking-wider d-block mt-2">Bước 2: Lịch hẹn</span>
                 </div>
-                <div class="flex-1 flex flex-col gap-2">
-                    <div class="h-1 bg-surface-container-highest rounded-full transition-colors duration-500" id="step-bar-3"></div>
-                    <span class="font-label-md text-label-md text-on-surface-variant uppercase" id="step-lbl-3">Bước 3: Xác nhận</span>
+                <div class="col-4">
+                    <div id="step-bar-3" class="bg-secondary rounded bg-opacity-25" style="height: 4px;"></div>
+                    <span id="step-lbl-3" class="font-heading text-muted text-uppercase small tracking-wider d-block mt-2">Bước 3: Xác nhận</span>
                 </div>
             </div>
             
             <!-- Form Sections -->
-            <div class="space-y-12">
+            <div class="d-flex flex-column gap-5">
                 
                 <!-- Step 1: Dealership Selection -->
-                <section class="space-y-6" id="step-1">
-                    <div class="flex items-center gap-4">
-                        <span class="font-mono-data text-mono-data text-primary-container px-3 py-1 border border-primary-container">01</span>
-                        <h2 class="font-headline-sm text-headline-sm uppercase">Lựa chọn đại lý nhận xe</h2>
+                <section id="step-1">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <span class="font-mono-data text-danger px-3 py-1 border border-danger">01</span>
+                        <h2 class="font-heading text-uppercase fs-5 m-0">Lựa chọn đại lý nhận xe</h2>
                     </div>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="row g-3">
                         <!-- Showroom Option 1 -->
-                        <div onclick="selectShowroom('Showroom Hà Nội')" class="showroom-card bg-surface-container border-2 border-primary-container p-6 relative cursor-pointer group transition-all">
-                            <div class="absolute top-4 right-4 text-primary-container" id="check-icon-1">
-                                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                            </div>
-                            <h3 class="font-headline-sm text-headline-sm text-on-surface mb-2">Showroom Bà Triệu - Hà Nội</h3>
-                            <p class="font-body-sm text-body-sm text-on-surface-variant mb-4">Số 110 Bà Triệu, Hai Bà Trưng, Hà Nội</p>
-                            <div class="flex items-center gap-2 text-primary-container font-mono-data text-mono-data">
-                                <span class="material-symbols-outlined text-[18px]">distance</span>
-                                <span>Tổng kho đại lý miền Bắc</span>
+                        <div class="col-12 col-md-6">
+                            <div onclick="selectShowroom(this, 'Showroom Hà Nội', 1)" class="showroom-card card card-ducati p-4 position-relative cursor-pointer border border-3 border-danger">
+                                <div class="position-absolute top-0 end-0 p-3 text-danger" id="check-icon-1">
+                                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                                </div>
+                                <h3 class="font-heading fs-6 text-white mb-2">Showroom Bà Triệu - Hà Nội</h3>
+                                <p class="text-muted small mb-3">Số 110 Bà Triệu, Hai Bà Trưng, Hà Nội</p>
+                                <div class="d-flex align-items-center gap-2 text-danger font-mono-data small">
+                                    <span class="material-symbols-outlined fs-6">distance</span>
+                                    <span>Tổng kho đại lý miền Bắc</span>
+                                </div>
                             </div>
                         </div>
 
                         <!-- Showroom Option 2 -->
-                        <div onclick="selectShowroom('Showroom TP.HCM')" class="showroom-card bg-surface-container border border-surface-variant p-6 cursor-pointer group hover:border-primary-container transition-all">
-                            <div class="absolute top-4 right-4 text-primary-container hidden" id="check-icon-2">
-                                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                            </div>
-                            <h3 class="font-headline-sm text-headline-sm text-on-surface mb-2">Showroom Phú Mỹ Hưng - Q7</h3>
-                            <p class="font-body-sm text-body-sm text-on-surface-variant mb-4">Số 3 Nguyễn Lương Bằng, Quận 7, TP.HCM</p>
-                            <div class="flex items-center gap-2 text-on-surface-variant font-mono-data text-mono-data group-hover:text-white transition-colors">
-                                <span class="material-symbols-outlined text-[18px]">distance</span>
-                                <span>Tổng kho đại lý miền Nam</span>
+                        <div class="col-12 col-md-6">
+                            <div onclick="selectShowroom(this, 'Showroom TP.HCM', 2)" class="showroom-card card card-ducati p-4 position-relative cursor-pointer">
+                                <div class="position-absolute top-0 end-0 p-3 text-danger d-none" id="check-icon-2">
+                                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                                </div>
+                                <h3 class="font-heading fs-6 text-white mb-2">Showroom Phú Mỹ Hưng - Q7</h3>
+                                <p class="text-muted small mb-3">Số 3 Nguyễn Lương Bằng, Quận 7, TP.HCM</p>
+                                <div class="d-flex align-items-center gap-2 text-muted font-mono-data small">
+                                    <span class="material-symbols-outlined fs-6">distance</span>
+                                    <span>Tổng kho đại lý miền Nam</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -72,137 +78,148 @@
                 </section>
                 
                 <!-- Step 2: Temporal Window (Date & Time) -->
-                <section class="space-y-6 transition-all duration-500 opacity-40 grayscale pointer-events-none" id="step-2">
-                    <div class="flex items-center gap-4">
-                        <span class="font-mono-data text-mono-data text-on-surface-variant px-3 py-1 border border-surface-variant" id="num-badge-2">02</span>
-                        <h2 class="font-headline-sm text-headline-sm uppercase">Thiết lập thời gian nhận xe / tư vấn</h2>
+                <section id="step-2" class="opacity-25 pointer-events-none transition-all duration-300">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <span id="num-badge-2" class="font-mono-data text-muted px-3 py-1 border border-secondary">02</span>
+                        <h2 class="font-heading text-uppercase fs-5 m-0">Thiết lập thời gian nhận xe / tư vấn</h2>
                     </div>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-surface-container p-6 border border-surface-variant">
-                        
-                        <!-- Mini Calendar selection widget -->
-                        <div class="space-y-4">
-                            <label class="font-label-md text-label-md text-on-surface-variant uppercase block">Chọn Ngày Nhận Xe</label>
-                            <input name="txtAppointmentDate" id="appointment-date" class="w-full bg-black border border-surface-variant px-4 py-3 text-on-surface font-mono-data focus:outline-none transition-all uppercase placeholder:text-surface-variant" type="date" required/>
-                        </div>
-                        
-                        <!-- Time select -->
-                        <div class="space-y-4">
-                            <label class="font-label-md text-label-md text-on-surface-variant uppercase block">Chọn Khung Giờ</label>
-                            <select name="txtAppointmentTime" class="w-full bg-black border border-surface-variant text-on-surface font-mono-data text-mono-data px-4 py-3 outline-none uppercase">
-                                <option value="09:00">09:00 sáng (Tư vấn kỹ thuật)</option>
-                                <option value="11:00">11:00 trưa (Lái thử V4 S)</option>
-                                <option value="14:00">14:00 chiều (Xác nhận bàn giao)</option>
-                                <option value="16:00">16:00 chiều (Lên spec xe)</option>
-                            </select>
+                    <div class="card card-ducati p-4">
+                        <div class="row g-3">
+                            <!-- Mini Calendar selection widget -->
+                            <div class="col-12 col-md-6">
+                                <label class="font-heading text-muted text-uppercase tracking-wider small d-block mb-2">Chọn Ngày Nhận Xe</label>
+                                <input name="txtAppointmentDate" id="appointment-date" class="form-control bg-black border-secondary text-white font-mono-data uppercase rounded-0" type="date" required/>
+                            </div>
+                            
+                            <!-- Time select -->
+                            <div class="col-12 col-md-6">
+                                <label class="font-heading text-muted text-uppercase tracking-wider small d-block mb-2">Chọn Khung Giờ</label>
+                                <select name="txtAppointmentTime" class="form-select bg-black border-secondary text-white font-mono-data text-uppercase rounded-0">
+                                    <option value="09:00">09:00 sáng (Tư vấn kỹ thuật)</option>
+                                    <option value="11:00">11:00 trưa (Lái thử V4 S)</option>
+                                    <option value="14:00">14:00 chiều (Xác nhận bàn giao)</option>
+                                    <option value="16:00">16:00 chiều (Lên spec xe)</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </section>
                 
                 <!-- Step 3: Customer Personal Info & Requisition -->
-                <section class="space-y-6 transition-all duration-500 opacity-40 grayscale pointer-events-none" id="step-3">
-                    <div class="flex items-center gap-4">
-                        <span class="font-mono-data text-mono-data text-on-surface-variant px-3 py-1 border border-surface-variant" id="num-badge-3">03</span>
-                        <h2 class="font-headline-sm text-headline-sm uppercase">Thông tin liên hệ & Đăng ký</h2>
+                <section id="step-3" class="opacity-25 pointer-events-none transition-all duration-300">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <span id="num-badge-3" class="font-mono-data text-muted px-3 py-1 border border-secondary">03</span>
+                        <h2 class="font-heading text-uppercase fs-5 m-0">Thông tin liên hệ & Đăng ký</h2>
                     </div>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
-                        <div class="space-y-2">
-                            <label class="font-label-md text-label-md text-on-surface-variant uppercase">Họ và tên khách hàng</label>
-                            <input name="txtFullName" class="w-full bg-black border border-surface-variant px-4 py-3 text-on-surface focus:border-white focus:ring-0 focus:outline-none transition-all placeholder:text-surface-variant uppercase font-mono-data" placeholder="ENZO FERRARI" required type="text"/>
+                    <div class="card card-ducati p-4">
+                        <div class="row g-3 mb-4">
+                            <div class="col-12 col-md-6">
+                                <label class="font-heading text-muted text-uppercase tracking-wider small d-block mb-2">Họ và tên khách hàng</label>
+                                <input name="txtFullName" class="form-control bg-black border-secondary text-white rounded-0 uppercase font-mono-data" placeholder="ENZO FERRARI" required type="text"/>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="font-heading text-muted text-uppercase tracking-wider small d-block mb-2">Số điện thoại liên hệ</label>
+                                <input name="txtPhone" class="form-control bg-black border-secondary text-white rounded-0 font-mono-data validate-phone" placeholder="0912345678" required type="tel"/>
+                            </div>
+                            <div class="col-12">
+                                <label class="font-heading text-muted text-uppercase tracking-wider small d-block mb-2">Địa chỉ Email</label>
+                                <input name="txtEmail" class="form-control bg-black border-secondary text-white rounded-0 font-mono-data" placeholder="client@ducati-corse.vn" required type="email"/>
+                            </div>
                         </div>
-                        <div class="space-y-2">
-                            <label class="font-label-md text-label-md text-on-surface-variant uppercase">Số điện thoại liên hệ</label>
-                            <input name="txtPhone" class="w-full bg-black border border-surface-variant px-4 py-3 text-on-surface focus:border-white focus:ring-0 focus:outline-none transition-all placeholder:text-surface-variant font-mono-data" placeholder="0912345678" required type="tel"/>
-                        </div>
-                        <div class="space-y-2 md:col-span-2">
-                            <label class="font-label-md text-label-md text-on-surface-variant uppercase">Địa chỉ Email</label>
-                            <input name="txtEmail" class="w-full bg-black border border-surface-variant px-4 py-3 text-on-surface focus:border-white focus:ring-0 focus:outline-none transition-all placeholder:text-surface-variant font-mono-data uppercase" placeholder="client@ducati-corse.vn" required type="email"/>
-                        </div>
-                    </div>
-                    
-                    <!-- Payment Methods selection -->
-                    <div class="space-y-3 pt-4">
-                        <label class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest block">Phương thức thanh toán</label>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <label class="flex items-center bg-surface-container border border-surface-variant p-4 cursor-pointer hover:border-primary-container">
-                                <input name="txtPaymentMethod" value="Tiền mặt" checked class="form-radio text-primary-container focus:ring-0 bg-transparent border-surface-variant w-4 h-4" type="radio"/>
-                                <span class="ml-3 font-mono-data text-[12px] uppercase">Tiền mặt tại showroom</span>
-                            </label>
-                            <label class="flex items-center bg-surface-container border border-surface-variant p-4 cursor-pointer hover:border-primary-container">
-                                <input name="txtPaymentMethod" value="Chuyển khoản" class="form-radio text-primary-container focus:ring-0 bg-transparent border-surface-variant w-4 h-4" type="radio"/>
-                                <span class="ml-3 font-mono-data text-[12px] uppercase">Chuyển khoản ngân hàng</span>
-                            </label>
-                            <label class="flex items-center bg-surface-container border border-surface-variant p-4 cursor-pointer hover:border-primary-container">
-                                <input name="txtPaymentMethod" value="Trả góp" class="form-radio text-primary-container focus:ring-0 bg-transparent border-surface-variant w-4 h-4" type="radio"/>
-                                <span class="ml-3 font-mono-data text-[12px] uppercase">Trả góp qua thẻ tín dụng</span>
-                            </label>
+                        
+                        <!-- Payment Methods selection -->
+                        <div class="pt-2 border-top border-secondary">
+                            <label class="font-heading text-muted text-uppercase tracking-wider small d-block mb-3">Phương thức thanh toán</label>
+                            <div class="row g-3">
+                                <div class="col-12 col-md-4">
+                                    <div class="form-check card card-ducati p-3 rounded-0 m-0">
+                                        <input name="txtPaymentMethod" id="payCash" value="Tiền mặt" checked class="form-check-input text-danger bg-transparent border-secondary" type="radio"/>
+                                        <label class="form-check-label font-mono-data text-white small text-uppercase ms-2" for="payCash">Tiền mặt tại showroom</label>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <div class="form-check card card-ducati p-3 rounded-0 m-0">
+                                        <input name="txtPaymentMethod" id="payTransfer" value="Chuyển khoản" class="form-check-input text-danger bg-transparent border-secondary" type="radio"/>
+                                        <label class="form-check-label font-mono-data text-white small text-uppercase ms-2" for="payTransfer">Chuyển khoản ngân hàng</label>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <div class="form-check card card-ducati p-3 rounded-0 m-0">
+                                        <input name="txtPaymentMethod" id="payInstallment" value="Trả góp" class="form-check-input text-danger bg-transparent border-secondary" type="radio"/>
+                                        <label class="form-check-label font-mono-data text-white small text-uppercase ms-2" for="payInstallment">Trả góp thẻ tín dụng</label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
                 
                 <!-- Action navigation -->
-                <div class="pt-8 border-t border-surface-variant flex justify-between items-center">
-                    <a href="${pageContext.request.contextPath}/cart.jsp" class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest hover:text-white transition-colors">Quay lại giỏ hàng</a>
-                    <button type="submit" class="bg-primary-container text-white font-headline-sm text-label-md px-10 py-4 uppercase tracking-tighter hover:brightness-110 active:scale-95 transition-all">
+                <div class="pt-4 border-top border-secondary d-flex justify-content-between align-items-center mb-5">
+                    <a href="${pageContext.request.contextPath}/cart.jsp" class="font-heading text-secondary text-uppercase text-decoration-none border-bottom border-secondary pb-1 small hover-text-white transition-colors">Quay lại giỏ hàng</a>
+                    <button type="submit" class="btn btn-ducati px-5 py-3 fs-6">
                         XÁC NHẬN ĐƠN ĐẶT LỊCH
                     </button>
                 </div>
             </div>
         </div>
         
-        <!-- Right Column: Summary Card (col-span-4) -->
-        <aside class="lg:col-span-4 lg:sticky lg:top-32 bg-surface-container-lowest border border-surface-variant p-8 space-y-8">
-            <div class="relative group overflow-hidden">
-                <img alt="Ducati Panigale V4 S Side Preview" class="w-full grayscale group-hover:grayscale-0 transition-all duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCk4c6ns1k0MQ5OTgENkasnm5N4Ffg4Suheh1kZ9xowSOyjm801UvWBMd0Tu6A7Ii3g70ESIn5aZ64m1VqYKXGiuQe3QslyjxXSxO9VbbWRrpCkiPSGJQnE1Eb_FT-vxr5zB5BuaRlRZ5-86-RtJag2Bh1YaMcEXeCS0_xyYHperS3X8VloIRi-ZE9ME2U0c63rzamnB_XYzO7rWLJlTZf8KdZEiBI7q-IDwZAqYMKLiImWSoHJs9ehh--Dkqjex1M02Lknix4pq7cm"/>
-                <div class="absolute bottom-4 left-4">
-                    <div class="bg-primary-container px-3 py-1 font-mono-data text-mono-data text-white text-[10px] uppercase font-bold tracking-widest">Panigale V4 R SPEC</div>
-                </div>
-            </div>
-            
-            <div class="space-y-4">
-                <h3 class="font-headline-md text-headline-sm md:text-headline-md uppercase tracking-tighter text-white">Panigale V4 R</h3>
-                <div class="grid grid-cols-2 gap-4 border-t border-b border-surface-variant py-4 font-mono-data">
-                    <div class="space-y-1">
-                        <p class="font-label-md text-label-md text-on-surface-variant uppercase text-[10px]">Động cơ</p>
-                        <p class="text-white text-sm font-semibold">998 CC V4</p>
-                    </div>
-                    <div class="space-y-1">
-                        <p class="font-label-md text-label-md text-on-surface-variant uppercase text-[10px]">Công suất</p>
-                        <p class="text-white text-sm font-semibold">218 CV (Mã lực)</p>
+        <!-- Right Column: Summary Card (col-lg-4) -->
+        <aside class="col-12 col-lg-4 sticky-lg-top" style="top: 100px; z-index: 5;">
+            <div class="card card-ducati overflow-hidden">
+                <div class="position-relative">
+                    <img alt="Ducati Panigale V4 S Side Preview" class="w-100 filter-grayscale" style="filter: grayscale(100%);" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCk4c6ns1k0MQ5OTgENkasnm5N4Ffg4Suheh1kZ9xowSOyjm801UvWBMd0Tu6A7Ii3g70ESIn5aZ64m1VqYKXGiuQe3QslyjxXSxO9VbbWRrpCkiPSGJQnE1Eb_FT-vxr5zB5BuaRlRZ5-86-RtJag2Bh1YaMcEXeCS0_xyYHperS3X8VloIRi-ZE9ME2U0c63rzamnB_XYzO7rWLJlTZf8KdZEiBI7q-IDwZAqYMKLiImWSoHJs9ehh--Dkqjex1M02Lknix4pq7cm"/>
+                    <div class="position-absolute bottom-0 start-0 p-3">
+                        <span class="badge bg-danger font-mono-data text-uppercase py-2 px-3 small rounded-0 fw-bold">Panigale V4 R SPEC</span>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Specs performance metrics progress bar -->
-            <div class="space-y-6 pt-2">
-                <h4 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Thông số tải lực</h4>
-                <div class="space-y-4">
-                    <div class="space-y-2">
-                        <div class="flex justify-between font-mono-data text-[12px] uppercase">
-                            <span>Lực nén khí động học</span>
-                            <span>92%</span>
+                
+                <div class="p-4">
+                    <h3 class="font-heading text-uppercase fs-5 text-white mb-3">Panigale V4 R</h3>
+                    <div class="row g-2 border-top border-bottom border-secondary py-3 mb-4 font-mono-data">
+                        <div class="col-6">
+                            <span class="text-muted small uppercase text-[10px] d-block mb-1">Động cơ</span>
+                            <span class="text-white small fw-bold">998 CC V4</span>
                         </div>
-                        <div class="h-1.5 bg-black w-full overflow-hidden">
-                            <div class="h-full bg-primary-container" style="width: 92%;"></div>
+                        <div class="col-6">
+                            <span class="text-muted small uppercase text-[10px] d-block mb-1">Công suất</span>
+                            <span class="text-white small fw-bold">218 CV</span>
                         </div>
                     </div>
-                    <div class="space-y-2">
-                        <div class="flex justify-between font-mono-data text-[12px] uppercase">
-                            <span>Tỉ số lực kéo</span>
-                            <span>Tối ưu cực đại</span>
+                    
+                    <!-- Specs performance metrics progress bar -->
+                    <div class="mb-4">
+                        <span class="font-heading text-muted text-uppercase tracking-wider small d-block mb-3">Thông số tải lực</span>
+                        <div class="d-flex flex-column gap-3">
+                            <div>
+                                <div class="d-flex justify-content-between font-mono-data text-uppercase" style="font-size:11px;">
+                                    <span>Lực nén khí động học</span>
+                                    <span>92%</span>
+                                </div>
+                                <div class="progress bg-black rounded-0 mt-1" style="height: 6px;">
+                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 92%" aria-valuenow="92" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="d-flex justify-content-between font-mono-data text-uppercase" style="font-size:11px;">
+                                    <span>Tỉ số lực kéo</span>
+                                    <span>Tối ưu cực đại</span>
+                                </div>
+                                <div class="progress bg-black rounded-0 mt-1" style="height: 6px;">
+                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="h-1.5 bg-black w-full overflow-hidden">
-                            <div class="h-full bg-primary-container" style="width: 100%;"></div>
-                        </div>
+                    </div>
+                    
+                    <div class="bg-black bg-opacity-50 p-3 border-start border-danger border-2">
+                        <p class="text-secondary small italic leading-relaxed m-0">
+                            "Tinh hoa cơ khí trên đường đua, chế tác tinh xảo dành cho những tay lái thực thụ. Đăng ký thông tin và xác nhận để đặt chỗ của bạn ngay."
+                        </p>
                     </div>
                 </div>
-            </div>
-            
-            <div class="bg-surface-container p-4 border-l-2 border-primary-container">
-                <p class="font-body-sm text-body-sm text-on-surface-variant italic leading-relaxed">
-                    "Tinh hoa cơ khí trên đường đua, chế tác tinh xảo dành cho những tay lái thực thụ. Đăng ký thông tin và xác nhận để đặt chỗ của bạn ngay."
-                </p>
             </div>
         </aside>
         
@@ -211,24 +228,18 @@
 
 <script>
     // Showroom card selection toggler
-    function selectShowroom(showroomName) {
+    function selectShowroom(cardEl, showroomName, index) {
         const cards = document.querySelectorAll('.showroom-card');
-        cards.forEach((card, idx) => {
-            card.classList.remove('border-2', 'border-primary-container');
-            card.classList.add('border', 'border-surface-variant');
-            
-            const check = document.getElementById(`check-icon-${idx + 1}`);
-            if (check) check.classList.add('hidden');
+        cards.forEach((card) => {
+            card.classList.remove('border-danger', 'border-3');
+            const check = card.querySelector('.position-absolute');
+            if (check) check.classList.add('d-none');
         });
         
         // Mark selected active
-        const clickedCard = event.currentTarget;
-        clickedCard.classList.add('border-2', 'border-primary-container');
-        clickedCard.classList.remove('border', 'border-surface-variant');
-        
-        const cardIndex = Array.from(cards).indexOf(clickedCard) + 1;
-        const check = document.getElementById(`check-icon-${cardIndex}`);
-        if (check) check.classList.remove('hidden');
+        cardEl.classList.add('border-danger', 'border-3');
+        const check = cardEl.querySelector('.position-absolute');
+        if (check) check.classList.remove('d-none');
 
         // Update hidden input form
         document.getElementById('selectedShowroomInput').value = showroomName;
@@ -239,25 +250,46 @@
 
     function unlockStep2() {
         const step2 = document.getElementById('step-2');
-        step2.classList.remove('opacity-40', 'grayscale', 'pointer-events-none');
+        step2.classList.remove('opacity-25', 'pointer-events-none');
         
-        document.getElementById('step-bar-2').classList.replace('bg-surface-container-highest', 'bg-primary-container');
-        document.getElementById('step-lbl-2').classList.add('text-primary-container');
-        document.getElementById('step-lbl-2').classList.remove('text-on-surface-variant');
-        document.getElementById('num-badge-2').classList.replace('text-on-surface-variant', 'text-primary-container');
-        document.getElementById('num-badge-2').classList.replace('border-surface-variant', 'border-primary-container');
+        const bar2 = document.getElementById('step-bar-2');
+        const lbl2 = document.getElementById('step-lbl-2');
+        const badge2 = document.getElementById('num-badge-2');
+        
+        if (bar2) bar2.classList.replace('bg-secondary', 'bg-danger');
+        if (lbl2) {
+            lbl2.classList.add('text-danger');
+            lbl2.classList.remove('text-muted');
+        }
+        if (badge2) {
+            badge2.classList.replace('text-muted', 'text-danger');
+            badge2.classList.replace('border-secondary', 'border-danger');
+        }
     }
 
     // Temporal Window date change unlocks Step 3
-    document.getElementById('appointment-date').addEventListener('change', () => {
-        const step3 = document.getElementById('step-3');
-        step3.classList.remove('opacity-40', 'grayscale', 'pointer-events-none');
-        
-        document.getElementById('step-bar-3').classList.replace('bg-surface-container-highest', 'bg-primary-container');
-        document.getElementById('step-lbl-3').classList.add('text-primary-container');
-        document.getElementById('step-lbl-3').classList.remove('text-on-surface-variant');
-        document.getElementById('num-badge-3').classList.replace('text-on-surface-variant', 'text-primary-container');
-        document.getElementById('num-badge-3').classList.replace('border-surface-variant', 'border-primary-container');
+    document.addEventListener('DOMContentLoaded', () => {
+        const dateInput = document.getElementById('appointment-date');
+        if (dateInput) {
+            dateInput.addEventListener('change', () => {
+                const step3 = document.getElementById('step-3');
+                step3.classList.remove('opacity-25', 'pointer-events-none');
+                
+                const bar3 = document.getElementById('step-bar-3');
+                const lbl3 = document.getElementById('step-lbl-3');
+                const badge3 = document.getElementById('num-badge-3');
+                
+                if (bar3) bar3.classList.replace('bg-secondary', 'bg-danger');
+                if (lbl3) {
+                    lbl3.classList.add('text-danger');
+                    lbl3.classList.remove('text-muted');
+                }
+                if (badge3) {
+                    badge3.classList.replace('text-muted', 'text-danger');
+                    badge3.classList.replace('border-secondary', 'border-danger');
+                }
+            });
+        }
     });
 </script>
 
