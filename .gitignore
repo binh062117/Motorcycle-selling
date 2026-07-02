@@ -1,23 +1,52 @@
-# NetBeans build output
-/build/
-/dist/
+# Build directories
+build/
+dist/
+target/
 
-# NetBeans user-specific settings
-/nbproject/private/
+# NetBeans specific
+nbproject/private/
+*.orig
 
-# Java compiled artifacts and archives
+# Compiled class files
 *.class
+
+# Package files
+*.jar
+!web/lib/*.jar
 *.war
 *.ear
-*.jar
 
-# Logs and temporary files
+# IDE files
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Log files
 *.log
+*.log.*
+
+# Temporary files
 *.tmp
 *.temp
 
-# OS and editor files
-.DS_Store
-Thumbs.db
-*.swp
-*.swo
+# Database files
+*.db
+*.sqlite
+
+# Environment variables
+.env
+.env.local
+
+# System files
+.classpath
+.project
+.settings/
