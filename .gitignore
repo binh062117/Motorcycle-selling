@@ -1,0 +1,23 @@
+# NetBeans build output
+/build/
+/dist/
+
+# NetBeans user-specific settings
+/nbproject/private/
+
+# Java compiled artifacts and archives
+*.class
+*.war
+*.ear
+*.jar
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
