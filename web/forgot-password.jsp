@@ -17,7 +17,7 @@
     
     <main class="position-relative min-vh-screen d-flex align-items-center justify-content-center justify-content-lg-end pe-lg-5 overflow-hidden" style="min-height: 100vh;">
         <div class="position-absolute inset-0 z-0 w-100 h-100">
-            <img id="auth-bg" alt="Ducati Background" class="w-100 h-100 object-fit-cover opacity-25" style="object-fit: cover; filter: grayscale(100%);" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBp5bJAIuQDbybt5lbxyZZ-4hrq02OIe2qAYVgIChQVPVZ-PRrhjm8lhyqpmAldwWHeRt2L09P_iCO6RW4hDfy-vMKoLFYnkr4VghoNIx5svJh5c3CUggsepB0yseQmzuJcnawgN3Oh4CllfJT8n2urfj6myNgsYgsur7W92McL-rIoWxZdEpXfPV5qQT7EGQooSwjNHE2gaG6V55scEVaEf5cEE8YDC3hxss9x8NONHeqGCXd1vAsbfDyCTRz_szpgOp3d8qzxgAy_"/>
+            <img id="auth-bg" alt="Ducati Background" class="w-100 h-100 object-fit-cover opacity-25" style="object-fit: cover; filter: grayscale(100%);" src="${pageContext.request.contextPath}/assets/img/auth-bg.svg"/>
             <div class="position-absolute inset-0 bg-gradient-to-r" style="background: linear-gradient(to right, var(--bg-dark) 0%, transparent 100%);"></div>
             <div class="carbon-overlay"></div>
         </div>

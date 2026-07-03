@@ -14,19 +14,19 @@ VALUES
 SET IDENTITY_INSERT dbo.users OFF;
 
 SET IDENTITY_INSERT dbo.brands ON;
-INSERT INTO dbo.brands (id, name, origin)
+INSERT INTO dbo.brands (id, name, origin, logo_url)
 VALUES
-    (1, N'Ducati', N'Ý'),
-    (2, N'Honda', N'Nhật Bản'),
-    (3, N'Yamaha', N'Nhật Bản'),
-    (4, N'Suzuki', N'Nhật Bản'),
-    (5, N'Piaggio', N'Ý'),
-    (6, N'Kawasaki', N'Nhật Bản'),
-    (7, N'AGV', N'Ý'),
-    (8, N'Shoei', N'Nhật Bản'),
-    (9, N'Motul', N'Pháp'),
-    (10, N'Brembo', N'Ý'),
-    (11, N'Michelin', N'Pháp');
+    (1, N'Ducati', N'Ý', N'https://cdn.simpleicons.org/ducati/EA1D25'),
+    (2, N'Honda', N'Nhật Bản', N'https://cdn.simpleicons.org/honda/EA1D25'),
+    (3, N'Yamaha', N'Nhật Bản', N'https://cdn.simpleicons.org/yamaha/EA1D25'),
+    (4, N'Suzuki', N'Nhật Bản', N'https://cdn.simpleicons.org/suzuki/EA1D25'),
+    (5, N'Piaggio', N'Ý', N'https://cdn.simpleicons.org/piaggio/EA1D25'),
+    (6, N'Kawasaki', N'Nhật Bản', N'https://cdn.simpleicons.org/kawasaki/EA1D25'),
+    (7, N'AGV', N'Ý', N'https://cdn.simpleicons.org/agv/EA1D25'),
+    (8, N'Shoei', N'Nhật Bản', N'https://cdn.simpleicons.org/shoei/EA1D25'),
+    (9, N'Motul', N'Pháp', N'https://cdn.simpleicons.org/motul/EA1D25'),
+    (10, N'Brembo', N'Ý', N'https://cdn.simpleicons.org/brembo/EA1D25'),
+    (11, N'Michelin', N'Pháp', N'https://cdn.simpleicons.org/michelin/EA1D25');
 SET IDENTITY_INSERT dbo.brands OFF;
 
 SET IDENTITY_INSERT dbo.categories ON;
@@ -70,6 +70,14 @@ VALUES
     (20, N'Gói bảo dưỡng 1.000 km', N'SVC-1000KM', 1, 11, N'SERVICE', 1500000, 999, NULL, NULL, NULL, NULL, N'Initial maintenance service package.', 1),
     (21, N'Gói bảo dưỡng phanh ABS', N'SVC-ABS-BRAKE', 10, 11, N'SERVICE', 2200000, 999, NULL, NULL, NULL, NULL, N'Brake inspection, cleaning and ABS diagnostics.', 1);
 SET IDENTITY_INSERT dbo.products OFF;
+
+UPDATE dbo.products SET image_url = N'assets/img/products/superbike.svg' WHERE sku IN (N'DUC-PV4R-2026', N'HON-CBR-2026', N'YAM-R1M-2026', N'KAW-ZX10R-2026');
+UPDATE dbo.products SET image_url = N'assets/img/products/naked.svg' WHERE sku IN (N'DUC-SFV4-2026', N'DUC-MON-2026', N'KAW-Z900SE-2026', N'HON-WINNERX-2026', N'YAM-EX155-2026', N'SUZ-RAIDER-2026');
+UPDATE dbo.products SET image_url = N'assets/img/products/adventure.svg' WHERE sku = N'DUC-DX-2026';
+UPDATE dbo.products SET image_url = N'assets/img/products/scooter.svg' WHERE sku IN (N'HON-AB160-2026', N'YAM-GRANDE-2026', N'PIO-SPRINTS-2026');
+UPDATE dbo.products SET image_url = N'assets/img/products/helmet.svg' WHERE sku IN (N'AGV-PISTAGPRR', N'SHO-X15');
+UPDATE dbo.products SET image_url = N'assets/img/products/parts.svg' WHERE sku IN (N'MOT-300V-10W40', N'BRE-PAD-FRONT', N'MIC-ROAD6-180');
+UPDATE dbo.products SET image_url = N'assets/img/products/service.svg' WHERE sku IN (N'SVC-1000KM', N'SVC-ABS-BRAKE');
 
 SET IDENTITY_INSERT dbo.vouchers ON;
 INSERT INTO dbo.vouchers (id, code, discount_percent, is_active)

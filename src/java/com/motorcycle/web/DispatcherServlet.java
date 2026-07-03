@@ -7,12 +7,16 @@ import com.motorcycle.service.AdminService;
 import com.motorcycle.service.AuthService;
 import com.motorcycle.service.CartService;
 import com.motorcycle.service.CatalogService;
+import com.motorcycle.service.GoogleOAuthService;
 import com.motorcycle.service.OrderService;
 import com.motorcycle.service.PaymentService;
 import com.motorcycle.util.RequestUtil;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -28,6 +32,7 @@ public class DispatcherServlet extends HttpServlet {
     private final OrderService orderService = new OrderService();
     private final AdminService adminService = new AdminService();
     private final PaymentService paymentService = new PaymentService();
+    private final GoogleOAuthService googleOAuthService = new GoogleOAuthService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -40,6 +45,7 @@ public class DispatcherServlet extends HttpServlet {
     }
 
     private void route(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setAttribute("cartItemCount", cartService.itemCount(request.getSession()));
         String path = request.getServletPath();
         if (request.getPathInfo() != null) {
             path = (path == null ? "" : path) + request.getPathInfo();
@@ -52,7 +58,9 @@ public class DispatcherServlet extends HttpServlet {
         }
 
         try {
-            if ("/login".equals(path)) {
+            if ("/home".equals(path)) {
+                home(request, response);
+            } else if ("/login".equals(path)) {
                 login(request, response);
             } else if ("/logout".equals(path)) {
                 logout(request, response);
@@ -64,6 +72,8 @@ public class DispatcherServlet extends HttpServlet {
                 resetPassword(request, response);
             } else if ("/google-login".equals(path)) {
                 googleLogin(request, response);
+            } else if ("/google-callback".equals(path)) {
+                googleCallback(request, response);
             } else if ("/products".equals(path)) {
                 products(request, response);
             } else if ("/product-detail".equals(path)) {
@@ -72,8 +82,14 @@ public class DispatcherServlet extends HttpServlet {
                 cart(request, response);
             } else if ("/checkout".equals(path)) {
                 checkout(request, response);
+            } else if ("/order-history".equals(path) || "/order-history.jsp".equals(path)) {
+                orderHistory(request, response);
+            } else if ("/order-detail".equals(path)) {
+                orderDetail(request, response);
             } else if (path.startsWith("/profile")) {
                 profile(request, response, path);
+            } else if ("/admin/dashboard".equals(path)) {
+                adminDashboard(request, response);
             } else if (path.startsWith("/admin/manage-product")) {
                 manageProduct(request, response);
             } else if (path.startsWith("/admin/manage-brand")) {
@@ -105,12 +121,12 @@ public class DispatcherServlet extends HttpServlet {
             return;
         }
         request.getSession().setAttribute("currentUser", user.get());
-        response.sendRedirect(request.getContextPath() + (user.get().isAdmin() ? "/admin/dashboard.jsp" : "/index.jsp"));
+        response.sendRedirect(request.getContextPath() + (user.get().isAdmin() ? "/admin/dashboard" : "/home"));
     }
 
     private void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.getSession().invalidate();
-        response.sendRedirect(request.getContextPath() + "/index.jsp");
+        response.sendRedirect(request.getContextPath() + "/home");
     }
 
     private void register(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -125,7 +141,7 @@ public class DispatcherServlet extends HttpServlet {
                 RequestUtil.param(request, "txtPhone"),
                 RequestUtil.param(request, "txtPassword"));
         request.getSession().setAttribute("currentUser", user);
-        response.sendRedirect(request.getContextPath() + "/index.jsp");
+        response.sendRedirect(request.getContextPath() + "/home");
     }
 
     private void forgotPassword(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -147,8 +163,33 @@ public class DispatcherServlet extends HttpServlet {
     }
 
     private void googleLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        request.getSession().setAttribute("oauthMessage", "Google OAuth2 sandbox placeholder. Configure client id/secret to enable real callback.");
-        response.sendRedirect(request.getContextPath() + "/login.jsp");
+        String state = java.util.UUID.randomUUID().toString();
+        request.getSession().setAttribute("googleOAuthState", state);
+        response.sendRedirect(googleOAuthService.buildAuthorizationUrl(googleRedirectUri(request), state));
+    }
+
+    private void googleCallback(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String state = RequestUtil.param(request, "state");
+        Object expected = request.getSession().getAttribute("googleOAuthState");
+        if (expected == null || !expected.equals(state)) {
+            response.sendRedirect(request.getContextPath() + "/login.jsp?error=google_state");
+            return;
+        }
+        User user = googleOAuthService.loginWithCode(RequestUtil.param(request, "code"), googleRedirectUri(request));
+        request.getSession().setAttribute("currentUser", user);
+        response.sendRedirect(request.getContextPath() + "/home");
+    }
+
+    private void home(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setAttribute("featuredProducts", catalogService.featuredProducts(4));
+        request.setAttribute("brands", catalogService.findBrands());
+        forward(request, response, "/home.jsp");
+    }
+
+    private String googleRedirectUri(HttpServletRequest request) {
+        return request.getScheme() + "://" + request.getServerName()
+                + (request.getServerPort() == 80 || request.getServerPort() == 443 ? "" : ":" + request.getServerPort())
+                + request.getContextPath() + "/google-callback";
     }
 
     private void products(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -180,7 +221,7 @@ public class DispatcherServlet extends HttpServlet {
                         RequestUtil.param(request, "selectedColor"),
                         RequestUtil.intParam(request, "quantity", 1));
             }
-            response.sendRedirect(request.getContextPath() + "/cart.jsp");
+            response.sendRedirect(request.getContextPath() + "/cart");
             return;
         }
         request.setAttribute("cartItems", cartService.getCart(session));
@@ -190,6 +231,8 @@ public class DispatcherServlet extends HttpServlet {
 
     private void checkout(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         if (isGet(request)) {
+            request.setAttribute("cartItems", cartService.getCart(request.getSession()));
+            request.setAttribute("cartSubtotal", cartService.subtotal(request.getSession()));
             forward(request, response, "/checkout.jsp");
             return;
         }
@@ -203,14 +246,34 @@ public class DispatcherServlet extends HttpServlet {
                     "123456");
             request.getSession().setAttribute("currentUser", user);
         }
-        orderService.createOrder(user,
+        com.motorcycle.model.Order order = orderService.createOrder(user,
                 cartService.getCart(request.getSession()),
                 RequestUtil.param(request, "txtShowroom"),
                 RequestUtil.param(request, "txtAppointmentDate"),
                 RequestUtil.param(request, "txtAppointmentTime"),
                 RequestUtil.param(request, "txtPaymentMethod"));
         cartService.clear(request.getSession());
-        response.sendRedirect(request.getContextPath() + "/order-history.jsp");
+        request.getSession().setAttribute("latestOrder", order);
+        if ("VNPay".equalsIgnoreCase(RequestUtil.param(request, "txtPaymentMethod"))) {
+            String returnUrl = request.getScheme() + "://" + request.getServerName()
+                    + (request.getServerPort() == 80 || request.getServerPort() == 443 ? "" : ":" + request.getServerPort())
+                    + request.getContextPath() + "/payment/callback";
+            response.sendRedirect(paymentService.createVnPayUrl(order, returnUrl, request.getRemoteAddr()));
+            return;
+        }
+        response.sendRedirect(request.getContextPath() + "/order-history");
+    }
+
+    private void orderHistory(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        User user = (User) request.getSession().getAttribute("currentUser");
+        request.setAttribute("orders", orderService.findOrdersFor(user));
+        forward(request, response, "/order-history.jsp");
+    }
+
+    private void orderDetail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        int id = RequestUtil.intParam(request, "id", 0);
+        request.setAttribute("order", orderService.findById(id).orElse(null));
+        forward(request, response, "/order-detail.jsp");
     }
 
     private void profile(HttpServletRequest request, HttpServletResponse response, String path) throws IOException, ServletException {
@@ -240,7 +303,7 @@ public class DispatcherServlet extends HttpServlet {
                         .findFirst()
                         .ifPresent(p -> catalogService.deleteProduct(p.getId()));
             }
-            response.sendRedirect(request.getContextPath() + "/admin/manage-product.jsp");
+            response.sendRedirect(request.getContextPath() + "/admin/manage-product");
             return;
         }
         if (!isGet(request)) {
@@ -256,42 +319,100 @@ public class DispatcherServlet extends HttpServlet {
             product.setHorsepower(RequestUtil.param(request, "txtHorsepower"));
             product.setWeight(RequestUtil.param(request, "txtWeight"));
             catalogService.saveProduct(product);
+            response.sendRedirect(request.getContextPath() + "/admin/manage-product");
+            return;
         }
-        response.sendRedirect(request.getContextPath() + "/admin/manage-product.jsp");
+        request.setAttribute("products", catalogService.search("", "", "", ""));
+        request.setAttribute("brands", catalogService.findBrands());
+        request.setAttribute("categories", catalogService.findCategories());
+        forward(request, response, "/admin/manage-product.jsp");
     }
 
-    private void manageBrand(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private void adminDashboard(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        List<Product> products = catalogService.search("", "", "", "");
+        List<com.motorcycle.model.Order> orders = orderService.findAllOrders();
+        BigDecimal revenue = BigDecimal.ZERO;
+        int pendingOrders = 0;
+        int stockTotal = 0;
+        Map<Integer, Integer> bookedByProduct = new HashMap<Integer, Integer>();
+
+        for (Product product : products) {
+            stockTotal += product.getStock();
+            bookedByProduct.put(product.getId(), 0);
+        }
+        for (com.motorcycle.model.Order order : orders) {
+            if ("PENDING".equalsIgnoreCase(order.getStatus()) || "NEW".equalsIgnoreCase(order.getStatus())) {
+                pendingOrders++;
+            }
+            if (order.getTotal() != null) {
+                revenue = revenue.add(order.getTotal());
+            }
+            for (com.motorcycle.model.OrderDetail detail : order.getDetails()) {
+                if (detail.getProduct() != null) {
+                    int productId = detail.getProduct().getId();
+                    Integer current = bookedByProduct.get(productId);
+                    bookedByProduct.put(productId, (current == null ? 0 : current) + detail.getQuantity());
+                }
+            }
+        }
+
+        request.setAttribute("productCount", products.size());
+        request.setAttribute("stockTotal", stockTotal);
+        request.setAttribute("pendingOrders", pendingOrders);
+        request.setAttribute("orderCount", orders.size());
+        request.setAttribute("dashboardRevenue", revenue);
+        request.setAttribute("topProducts", products.size() > 6 ? products.subList(0, 6) : products);
+        request.setAttribute("bookedByProduct", bookedByProduct);
+        forward(request, response, "/admin/dashboard-view.jsp");
+    }
+
+    private void manageBrand(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         if (!isGet(request)) {
             Brand brand = new Brand();
             brand.setId(RequestUtil.intParam(request, "txtBrandId", 0));
             brand.setName(RequestUtil.param(request, "txtBrandName"));
             brand.setOrigin(RequestUtil.param(request, "txtBrandOrigin"));
+            brand.setLogoUrl(RequestUtil.param(request, "txtBrandLogoUrl"));
             catalogService.saveBrand(brand);
+            response.sendRedirect(request.getContextPath() + "/admin/manage-brand");
+            return;
         } else if ("delete".equals(RequestUtil.param(request, "action"))) {
             catalogService.deleteBrand(RequestUtil.intParam(request, "id", 0));
+            response.sendRedirect(request.getContextPath() + "/admin/manage-brand");
+            return;
         }
-        response.sendRedirect(request.getContextPath() + "/admin/manage-brand.jsp");
+        request.setAttribute("brands", catalogService.findBrands());
+        forward(request, response, "/admin/manage-brand.jsp");
     }
 
-    private void manageOrder(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private void manageOrder(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         if (!isGet(request)) {
             orderService.updateStatus(RequestUtil.intParam(request, "orderId", 0), RequestUtil.param(request, "txtOrderStatus"));
+            response.sendRedirect(request.getContextPath() + "/admin/manage-order");
+            return;
         }
-        response.sendRedirect(request.getContextPath() + "/admin/manage-order.jsp");
+        request.setAttribute("orders", orderService.findAllOrders());
+        forward(request, response, "/admin/manage-order.jsp");
     }
 
-    private void manageUser(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private void manageUser(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         if (!isGet(request)) {
             adminService.updateRole(RequestUtil.intParam(request, "accountId", 0), RequestUtil.param(request, "txtRole"));
+            response.sendRedirect(request.getContextPath() + "/admin/manage-user");
+            return;
         }
-        response.sendRedirect(request.getContextPath() + "/admin/manage-user.jsp");
+        request.setAttribute("users", adminService.findUsers());
+        forward(request, response, "/admin/manage-user.jsp");
     }
 
     private void payment(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        int orderId = RequestUtil.intParam(request, "orderId", 0);
-        if (request.getServletPath().contains("callback")) {
-            paymentService.recordCallback(orderId, "VNPay", RequestUtil.param(request, "transactionCode"), RequestUtil.param(request, "status"));
-            response.sendRedirect(request.getContextPath() + "/payment-result.jsp");
+        String paymentPath = request.getServletPath() + (request.getPathInfo() == null ? "" : request.getPathInfo());
+        if (paymentPath.contains("callback")) {
+            boolean valid = paymentService.verifyVnPayCallback(request.getParameterMap());
+            if (valid) {
+                paymentService.recordVnPayCallback(request.getParameterMap());
+            }
+            response.sendRedirect(request.getContextPath() + "/payment-result.jsp?status=" + (valid ? "success" : "failed"));
             return;
         }
         response.sendRedirect(request.getContextPath() + "/payment-result.jsp");

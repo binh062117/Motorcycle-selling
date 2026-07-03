@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#1b222b"/>
+      <stop offset="0.55" stop-color="#0c1117"/>
+      <stop offset="1" stop-color="#050608"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="1000" fill="url(#g)"/>
+  <g opacity=".18" stroke="#ffffff" stroke-width="3">
+    <path d="M0 190h1600M0 290h1600M0 390h1600M0 490h1600M0 590h1600M0 690h1600"/>
+  </g>
+  <g transform="translate(190 330)" opacity=".8">
+    <path d="M150 370h840c70 0 128-57 128-128 0-70-58-127-128-127H810L705 0H487L350 115H195C124 115 67 172 67 242c0 71 57 128 128 128z" fill="#171f29"/>
+    <circle cx="260" cy="370" r="135" fill="#080b10" stroke="#ef233c" stroke-width="24"/>
+    <circle cx="930" cy="370" r="135" fill="#080b10" stroke="#ef233c" stroke-width="24"/>
+    <path d="M360 115h275l86-92h135" fill="none" stroke="#cbd5e1" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M455 115h200l-48 116H310z" fill="#ef233c" opacity=".75"/>
+  </g>
+  <text x="118" y="145" fill="#ef233c" font-family="Arial, sans-serif" font-size="72" font-weight="900">DUCATI</text>
+  <text x="120" y="195" fill="#94a3b8" font-family="Arial, sans-serif" font-size="24" letter-spacing="8">BORGO PANIGALE</text>
+</svg>

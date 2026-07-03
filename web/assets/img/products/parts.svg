@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1200" viewBox="0 0 900 1200">
+  <rect width="900" height="1200" fill="#11151a"/>
+  <circle cx="450" cy="640" r="210" fill="none" stroke="#cf1020" stroke-width="44"/>
+  <circle cx="450" cy="640" r="95" fill="#242a31"/>
+  <path d="M450 335 L505 525 L700 490 L555 625 L690 765 L505 725 L450 945 L395 725 L210 765 L345 625 L200 490 L395 525 Z" fill="#f4f4f4" opacity=".92"/>
+  <text x="60" y="120" fill="#cf1020" font-family="Arial" font-size="34" font-weight="800" letter-spacing="8">PARTS</text>
+  <text x="60" y="175" fill="#fff" font-family="Arial" font-size="54" font-weight="900">PERFORMANCE</text>
+</svg>

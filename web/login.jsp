@@ -24,7 +24,7 @@
         
         <!-- Background Image Parallax -->
         <div class="position-absolute inset-0 z-0 w-100 h-100">
-            <img id="auth-bg" alt="Ducati Hangar Background" class="w-100 h-100 object-fit-cover opacity-25" style="object-fit: cover; filter: grayscale(100%); transition: transform 0.7s;" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBp5bJAIuQDbybt5lbxyZZ-4hrq02OIe2qAYVgIChQVPVZ-PRrhjm8lhyqpmAldwWHeRt2L09P_iCO6RW4hDfy-vMKoLFYnkr4VghoNIx5svJh5c3CUggsepB0yseQmzuJcnawgN3Oh4CllfJT8n2urfj6myNgsYgsur7W92McL-rIoWxZdEpXfPV5qQT7EGQooSwjNHE2gaG6V55scEVaEf5cEE8YDC3hxss9x8NONHeqGCXd1vAsbfDyCTRz_szpgOp3d8qzxgAy_"/>
+            <img id="auth-bg" alt="Ducati Hangar Background" class="w-100 h-100 object-fit-cover opacity-25" style="object-fit: cover; filter: grayscale(100%); transition: transform 0.7s;" src="${pageContext.request.contextPath}/assets/img/auth-bg.svg"/>
             <div class="position-absolute inset-0 bg-gradient-to-r" style="background: linear-gradient(to right, var(--bg-dark) 0%, transparent 100%);"></div>
             <div class="carbon-overlay"></div>
         </div>
@@ -87,7 +87,7 @@
 
                     <!-- Google login option as required by prompt -->
                     <a href="${pageContext.request.contextPath}/google-login" class="btn btn-outline-ducati w-100 py-3 d-flex align-items-center justify-content-center gap-2" style="font-size:12px;">
-                        <img src="https://lh3.googleusercontent.com/COxitBE1U5pssR47urGIwHUDtbW6nmJ5LJ6jiWi-W7ev1kSpb37t5FEo9cXM81J4d14" alt="Google logo" style="width: 16px; height: 16px;"/>
+                        <img src="${pageContext.request.contextPath}/assets/img/google-logo.svg" alt="Google logo" style="width: 18px; height: 18px; flex: 0 0 auto;"/>
                         <span>ĐĂNG NHẬP BẰNG GOOGLE</span>
                     </a>
                 </form>

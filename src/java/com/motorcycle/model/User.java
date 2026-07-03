@@ -10,6 +10,7 @@ public class User extends BaseEntity {
     private Role role;
     private boolean active = true;
     private String resetToken;
+    private String avatarUrl;
 
     public User() {
     }
@@ -50,4 +51,6 @@ public class User extends BaseEntity {
     public void setActive(boolean active) { this.active = active; touch(); }
     public String getResetToken() { return resetToken; }
     public void setResetToken(String resetToken) { this.resetToken = resetToken; touch(); }
+    public String getAvatarUrl() { return avatarUrl; }
+    public void setAvatarUrl(String avatarUrl) { this.avatarUrl = avatarUrl; touch(); }
 }

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1200" viewBox="0 0 900 1200">
+  <rect width="900" height="1200" fill="#11151a"/>
+  <path d="M280 760 L560 480 L650 570 L370 850 Z" fill="#cf1020"/>
+  <path d="M565 380 C645 340 735 360 785 425 L710 500 L650 440 L725 365 C650 350 585 375 545 430 Z" fill="#f4f4f4"/>
+  <circle cx="330" cy="805" r="95" fill="none" stroke="#303943" stroke-width="28"/>
+  <text x="60" y="120" fill="#cf1020" font-family="Arial" font-size="34" font-weight="800" letter-spacing="8">WORKSHOP</text>
+  <text x="60" y="175" fill="#fff" font-family="Arial" font-size="54" font-weight="900">SERVICE</text>
+</svg>

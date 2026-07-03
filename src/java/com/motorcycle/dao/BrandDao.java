@@ -12,7 +12,8 @@ import java.util.Optional;
 
 public class BrandDao extends SqlSupport {
     public List<Brand> findAll() {
-        String sql = "SELECT id, name, origin FROM brands ORDER BY name";
+        ensureLogoColumn();
+        String sql = "SELECT id, name, origin, logo_url FROM brands ORDER BY name";
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);
              ResultSet rs = statement.executeQuery()) {
@@ -27,7 +28,8 @@ public class BrandDao extends SqlSupport {
     }
 
     public Optional<Brand> findById(int id) {
-        String sql = "SELECT id, name, origin FROM brands WHERE id = ?";
+        ensureLogoColumn();
+        String sql = "SELECT id, name, origin, logo_url FROM brands WHERE id = ?";
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, id);
@@ -40,16 +42,17 @@ public class BrandDao extends SqlSupport {
     }
 
     public Brand save(Brand brand) {
+        ensureLogoColumn();
         boolean update = brand.getId() > 0;
         String sql = update
-                ? "UPDATE brands SET name = ?, origin = ?, updated_at = SYSUTCDATETIME() WHERE id = ?"
-                : "INSERT INTO brands (name, origin) VALUES (?, ?)";
+                ? "UPDATE brands SET name = ?, origin = ?, logo_url = ?, updated_at = SYSUTCDATETIME() WHERE id = ?"
+                : "INSERT INTO brands (name, origin, logo_url) VALUES (?, ?, ?)";
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             if (update) {
-                bind(statement, brand.getName(), brand.getOrigin(), brand.getId());
+                bind(statement, brand.getName(), brand.getOrigin(), brand.getLogoUrl(), brand.getId());
             } else {
-                bind(statement, brand.getName(), brand.getOrigin());
+                bind(statement, brand.getName(), brand.getOrigin(), brand.getLogoUrl());
             }
             statement.executeUpdate();
             if (!update) {
@@ -76,6 +79,19 @@ public class BrandDao extends SqlSupport {
     }
 
     private Brand map(ResultSet rs) throws SQLException {
-        return new Brand(rs.getInt("id"), rs.getString("name"), rs.getString("origin"));
+        Brand brand = new Brand(rs.getInt("id"), rs.getString("name"), rs.getString("origin"));
+        brand.setLogoUrl(rs.getString("logo_url"));
+        return brand;
+    }
+
+    private void ensureLogoColumn() {
+        String sql = "IF COL_LENGTH('dbo.brands', 'logo_url') IS NULL "
+                + "ALTER TABLE dbo.brands ADD logo_url NVARCHAR(1000) NULL";
+        try (Connection connection = DatabaseConnection.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.execute(sql);
+        } catch (SQLException ex) {
+            throw new IllegalStateException("Cannot ensure brands.logo_url column", ex);
+        }
     }
 }

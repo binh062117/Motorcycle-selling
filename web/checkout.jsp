@@ -1,10 +1,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <c:set var="pageTitle" value="ĐĂNG KÝ NHẬN XE & LÊN LỊCH HẸN" />
 <%@ include file="/common/header.jsp" %>
 
 <main class="py-5 container-fluid px-4 max-w-container-max mx-auto">
-    <form action="${pageContext.request.contextPath}/order-history.jsp" method="post" class="row g-4 needs-validation-custom" novalidate>
+    <form action="${pageContext.request.contextPath}/checkout" method="post" class="row g-4 needs-validation-custom" novalidate>
         
         <!-- Left Column: Booking Form (col-lg-8) -->
         <div class="col-12 col-lg-8">
@@ -117,38 +118,51 @@
                         <div class="row g-3 mb-4">
                             <div class="col-12 col-md-6">
                                 <label class="font-heading text-muted text-uppercase tracking-wider small d-block mb-2">Họ và tên khách hàng</label>
-                                <input name="txtFullName" class="form-control bg-black border-secondary text-white rounded-0 uppercase font-mono-data" placeholder="ENZO FERRARI" required type="text"/>
+                                <input name="txtFullName" class="form-control bg-black border-secondary text-white rounded-0 uppercase font-mono-data" placeholder="ENZO FERRARI" value="${sessionScope.currentUser.fullName}" required type="text"/>
                             </div>
                             <div class="col-12 col-md-6">
                                 <label class="font-heading text-muted text-uppercase tracking-wider small d-block mb-2">Số điện thoại liên hệ</label>
-                                <input name="txtPhone" class="form-control bg-black border-secondary text-white rounded-0 font-mono-data validate-phone" placeholder="0912345678" required type="tel"/>
+                                <input name="txtPhone" class="form-control bg-black border-secondary text-white rounded-0 font-mono-data validate-phone" placeholder="0912345678" value="${sessionScope.currentUser.phone}" required type="tel"/>
                             </div>
                             <div class="col-12">
                                 <label class="font-heading text-muted text-uppercase tracking-wider small d-block mb-2">Địa chỉ Email</label>
-                                <input name="txtEmail" class="form-control bg-black border-secondary text-white rounded-0 font-mono-data" placeholder="client@ducati-corse.vn" required type="email"/>
+                                <input name="txtEmail" class="form-control bg-black border-secondary text-white rounded-0 font-mono-data" placeholder="client@ducati-corse.vn" value="${sessionScope.currentUser.email}" required type="email"/>
                             </div>
                         </div>
                         
                         <!-- Payment Methods selection -->
                         <div class="pt-2 border-top border-secondary">
                             <label class="font-heading text-muted text-uppercase tracking-wider small d-block mb-3">Phương thức thanh toán</label>
-                            <div class="row g-3">
-                                <div class="col-12 col-md-4">
-                                    <div class="form-check card card-ducati p-3 rounded-0 m-0">
-                                        <input name="txtPaymentMethod" id="payCash" value="Tiền mặt" checked class="form-check-input text-danger bg-transparent border-secondary" type="radio"/>
-                                        <label class="form-check-label font-mono-data text-white small text-uppercase ms-2" for="payCash">Tiền mặt tại showroom</label>
+                            <input name="txtPaymentMethod" id="payVnpay" value="VNPay" type="hidden"/>
+                            <div class="card card-ducati p-4 rounded-0 m-0 border border-danger">
+                                <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <img src="${pageContext.request.contextPath}/assets/img/vnpay-logo.svg" alt="VNPay" style="width: 116px; height: 40px; object-fit: contain; background:#fff; padding:4px;"/>
+                                        <div>
+                                            <div class="font-heading text-white text-uppercase fw-bold">Thanh toán online qua VNPay</div>
+                                            <div class="text-muted small">Sau khi xác nhận đơn, hệ thống chuyển sang cổng VNPay để thanh toán thật.</div>
+                                        </div>
                                     </div>
+                                    <span class="badge bg-danger rounded-0 font-mono-data text-uppercase px-3 py-2">Đang chọn</span>
                                 </div>
-                                <div class="col-12 col-md-4">
-                                    <div class="form-check card card-ducati p-3 rounded-0 m-0">
-                                        <input name="txtPaymentMethod" id="payTransfer" value="Chuyển khoản" class="form-check-input text-danger bg-transparent border-secondary" type="radio"/>
-                                        <label class="form-check-label font-mono-data text-white small text-uppercase ms-2" for="payTransfer">Chuyển khoản ngân hàng</label>
+                                <div class="row g-2 mt-4 font-mono-data small text-uppercase">
+                                    <div class="col-12 col-md-4">
+                                        <div class="border border-secondary p-3 h-100 d-flex align-items-center gap-2">
+                                            <span class="material-symbols-outlined text-danger">account_balance</span>
+                                            <span>Ngân hàng nội địa</span>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-12 col-md-4">
-                                    <div class="form-check card card-ducati p-3 rounded-0 m-0">
-                                        <input name="txtPaymentMethod" id="payInstallment" value="Trả góp" class="form-check-input text-danger bg-transparent border-secondary" type="radio"/>
-                                        <label class="form-check-label font-mono-data text-white small text-uppercase ms-2" for="payInstallment">Trả góp thẻ tín dụng</label>
+                                    <div class="col-12 col-md-4">
+                                        <div class="border border-secondary p-3 h-100 d-flex align-items-center gap-2">
+                                            <span class="material-symbols-outlined text-danger">qr_code_2</span>
+                                            <span>Quét mã QR VNPay</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-4">
+                                        <div class="border border-secondary p-3 h-100 d-flex align-items-center gap-2">
+                                            <span class="material-symbols-outlined text-danger">wallet</span>
+                                            <span>Ví điện tử / Mobile banking</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -158,9 +172,9 @@
                 
                 <!-- Action navigation -->
                 <div class="pt-4 border-top border-secondary d-flex justify-content-between align-items-center mb-5">
-                    <a href="${pageContext.request.contextPath}/cart.jsp" class="font-heading text-secondary text-uppercase text-decoration-none border-bottom border-secondary pb-1 small hover-text-white transition-colors">Quay lại giỏ hàng</a>
+                    <a href="${pageContext.request.contextPath}/cart" class="font-heading text-secondary text-uppercase text-decoration-none border-bottom border-secondary pb-1 small hover-text-white transition-colors">Quay lại giỏ hàng</a>
                     <button type="submit" class="btn btn-ducati px-5 py-3 fs-6">
-                        XÁC NHẬN ĐƠN ĐẶT LỊCH
+                        THANH TOÁN QUA VNPAY
                     </button>
                 </div>
             </div>
@@ -170,47 +184,37 @@
         <aside class="col-12 col-lg-4 sticky-lg-top" style="top: 100px; z-index: 5;">
             <div class="card card-ducati overflow-hidden">
                 <div class="position-relative">
-                    <img alt="Ducati Panigale V4 S Side Preview" class="w-100 filter-grayscale" style="filter: grayscale(100%);" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCk4c6ns1k0MQ5OTgENkasnm5N4Ffg4Suheh1kZ9xowSOyjm801UvWBMd0Tu6A7Ii3g70ESIn5aZ64m1VqYKXGiuQe3QslyjxXSxO9VbbWRrpCkiPSGJQnE1Eb_FT-vxr5zB5BuaRlRZ5-86-RtJag2Bh1YaMcEXeCS0_xyYHperS3X8VloIRi-ZE9ME2U0c63rzamnB_XYzO7rWLJlTZf8KdZEiBI7q-IDwZAqYMKLiImWSoHJs9ehh--Dkqjex1M02Lknix4pq7cm"/>
+                    <c:set var="firstItem" value="${cartItems[0]}"/>
+                    <img alt="Sản phẩm đặt mua" class="w-100 filter-grayscale" style="filter: grayscale(100%);" src="${pageContext.request.contextPath}/${firstItem.product.imageUrl}" onerror="this.onerror=null;this.src='${pageContext.request.contextPath}/assets/img/product-placeholder.svg';"/>
                     <div class="position-absolute bottom-0 start-0 p-3">
-                        <span class="badge bg-danger font-mono-data text-uppercase py-2 px-3 small rounded-0 fw-bold">Panigale V4 R SPEC</span>
+                        <span class="badge bg-danger font-mono-data text-uppercase py-2 px-3 small rounded-0 fw-bold">${empty firstItem ? 'ĐƠN HÀNG' : firstItem.product.category.name}</span>
                     </div>
                 </div>
                 
                 <div class="p-4">
-                    <h3 class="font-heading text-uppercase fs-5 text-white mb-3">Panigale V4 R</h3>
+                    <h3 class="font-heading text-uppercase fs-5 text-white mb-3">Tóm tắt đơn hàng</h3>
                     <div class="row g-2 border-top border-bottom border-secondary py-3 mb-4 font-mono-data">
                         <div class="col-6">
                             <span class="text-muted small uppercase text-[10px] d-block mb-1">Động cơ</span>
-                            <span class="text-white small fw-bold">998 CC V4</span>
+                            <span class="text-white small fw-bold">${empty firstItem ? '-' : firstItem.product.displacement}</span>
                         </div>
                         <div class="col-6">
                             <span class="text-muted small uppercase text-[10px] d-block mb-1">Công suất</span>
-                            <span class="text-white small fw-bold">218 CV</span>
+                            <span class="text-white small fw-bold">${empty firstItem ? '-' : firstItem.product.horsepower}</span>
                         </div>
                     </div>
                     
-                    <!-- Specs performance metrics progress bar -->
-                    <div class="mb-4">
-                        <span class="font-heading text-muted text-uppercase tracking-wider small d-block mb-3">Thông số tải lực</span>
-                        <div class="d-flex flex-column gap-3">
-                            <div>
-                                <div class="d-flex justify-content-between font-mono-data text-uppercase" style="font-size:11px;">
-                                    <span>Lực nén khí động học</span>
-                                    <span>92%</span>
-                                </div>
-                                <div class="progress bg-black rounded-0 mt-1" style="height: 6px;">
-                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 92%" aria-valuenow="92" aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
+                    <div class="mb-4 font-mono-data">
+                        <span class="font-heading text-muted text-uppercase tracking-wider small d-block mb-3">Sản phẩm</span>
+                        <c:forEach var="item" items="${cartItems}">
+                            <div class="d-flex justify-content-between border-bottom border-secondary py-2">
+                                <span class="text-white small">${item.product.name} x ${item.quantity}</span>
+                                <span class="text-danger small"><fmt:formatNumber value="${item.lineTotal}" pattern="#,##0"/>đ</span>
                             </div>
-                            <div>
-                                <div class="d-flex justify-content-between font-mono-data text-uppercase" style="font-size:11px;">
-                                    <span>Tỉ số lực kéo</span>
-                                    <span>Tối ưu cực đại</span>
-                                </div>
-                                <div class="progress bg-black rounded-0 mt-1" style="height: 6px;">
-                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                            </div>
+                        </c:forEach>
+                        <div class="d-flex justify-content-between pt-3 fw-bold">
+                            <span>Tổng</span>
+                            <span class="text-danger"><fmt:formatNumber value="${cartSubtotal}" pattern="#,##0"/>đ</span>
                         </div>
                     </div>
                     

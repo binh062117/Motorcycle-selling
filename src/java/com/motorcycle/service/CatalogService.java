@@ -6,6 +6,7 @@ import com.motorcycle.dao.ProductDao;
 import com.motorcycle.model.Brand;
 import com.motorcycle.model.Category;
 import com.motorcycle.model.Product;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +17,14 @@ public class CatalogService {
 
     public List<Product> search(String keyword, String brand, String category, String priceFilter) {
         return productDao.search(keyword, brand, category, priceFilter);
+    }
+
+    public List<Product> featuredProducts(int limit) {
+        List<Product> all = search("", "", "", "");
+        if (all.size() <= limit) {
+            return all;
+        }
+        return new ArrayList<Product>(all.subList(0, limit));
     }
 
     public Optional<Product> findProduct(int id) {

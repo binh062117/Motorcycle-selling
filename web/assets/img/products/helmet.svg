@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1200" viewBox="0 0 900 1200">
+  <rect width="900" height="1200" fill="#11151a"/>
+  <path d="M170 670 C170 430 330 290 540 300 C710 308 815 430 810 610 C805 765 700 870 535 890 L300 890 C220 850 170 770 170 670 Z" fill="#cf1020"/>
+  <path d="M365 455 L760 465 C765 560 720 630 610 675 L360 675 C325 600 325 520 365 455 Z" fill="#101418"/>
+  <path d="M225 820 L520 820 L575 890 L300 890 Z" fill="#f4f4f4"/>
+  <text x="60" y="120" fill="#cf1020" font-family="Arial" font-size="34" font-weight="800" letter-spacing="8">GEAR</text>
+  <text x="60" y="175" fill="#fff" font-family="Arial" font-size="54" font-weight="900">RACING HELMET</text>
+</svg>

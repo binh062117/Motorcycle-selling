@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
     
     <!-- Footer Section -->
     <footer class="w-100 py-5 bg-dark border-top border-secondary position-relative" style="border-color: var(--border-color) !important; z-index: 10;">
@@ -12,7 +12,7 @@
                         <span class="font-mono-data text-muted uppercase leading-none mt-1" style="font-size:10px; letter-spacing: 0.3em;">Borgo Panigale — Italy</span>
                     </div>
                     <p class="text-muted small max-w-sm mb-4" style="max-width: 400px; line-height: 1.6;">
-                        Một công ty con trực thuộc tập đoàn Audi AG. Linh hồn của những đường đua danh tiếng, đam mê bất tận trên mọi hành trình dài. Trải nghiệm huyền thoại tốc độ Ý đích thực.
+                        <fmt:message key="footer.description" />
                     </p>
                     <div class="d-flex gap-2">
                         <a class="btn btn-outline-secondary d-flex align-items-center justify-content-center p-2 rounded-0 hover:border-danger hover:text-danger text-white text-decoration-none" style="width: 40px; height: 40px;" href="#">
@@ -29,21 +29,20 @@
                 
                 <!-- Column 2: Quick Links -->
                 <div class="col-12 col-sm-6 col-md-3 mb-4 mb-sm-0">
-                    <span class="font-heading text-danger text-uppercase tracking-wider small fw-bold d-block mb-3">Hãng Xe & Showroom</span>
+                    <span class="font-heading text-danger text-uppercase tracking-wider small fw-bold d-block mb-3"><fmt:message key="footer.quickTitle" /></span>
                     <ul class="list-unstyled d-flex flex-column gap-2 m-0 small">
-                        <li><a class="text-muted hover:text-white text-decoration-none transition-colors" href="${pageContext.request.contextPath}/products.jsp">Bộ Sưu Tập Xe</a></li>
-                        <li><a class="text-muted hover:text-white text-decoration-none transition-colors" href="#">Bảng Giá Niêm Yết</a></li>
-                        <li><a class="text-muted hover:text-white text-decoration-none transition-colors" href="#">Hệ Thống Đại Lý</a></li>
-                        <li><a class="text-muted hover:text-white text-decoration-none transition-colors" href="#">Lịch Trình Lái Thử</a></li>
+                        <li><a class="text-muted hover:text-white text-decoration-none transition-colors" href="${pageContext.request.contextPath}/products"><fmt:message key="footer.collection" /></a></li>
+                        <li><a class="text-muted hover:text-white text-decoration-none transition-colors" href="#"><fmt:message key="footer.price" /></a></li>
+                        <li><a class="text-muted hover:text-white text-decoration-none transition-colors" href="#"><fmt:message key="footer.dealers" /></a></li>
+                        <li><a class="text-muted hover:text-white text-decoration-none transition-colors" href="#"><fmt:message key="footer.testRide" /></a></li>
                     </ul>
                 </div>
                 
                 <!-- Column 3: Contact & Legal -->
                 <div class="col-12 col-sm-6 col-md-3">
-                    <span class="font-heading text-danger text-uppercase tracking-wider small fw-bold d-block mb-3">Trụ Sở Liên Hệ</span>
+                    <span class="font-heading text-danger text-uppercase tracking-wider small fw-bold d-block mb-3"><fmt:message key="footer.contactTitle" /></span>
                     <p class="text-muted small leading-relaxed mb-3">
-                        Showroom Hà Nội: Số 110 Bà Triệu, Hai Bà Trưng, Hà Nội<br/>
-                        Showroom TP.HCM: Số 3 Nguyễn Lương Bằng, Quận 7, TP.HCM
+                        <fmt:message key="footer.contact" />
                     </p>
                     <p class="font-mono-data text-danger font-semibold m-0" style="font-size:14px;">+84 24 6413 1111</p>
                 </div>
@@ -56,7 +55,7 @@
                 </span>
                 <div class="d-flex gap-4 font-mono-data text-muted" style="font-size: 10px;">
                     <span>MST: 05113870967</span>
-                    <span>Giấy phép ĐKKD số: 102/GP-UBND</span>
+                    <span><fmt:message key="footer.license" /></span>
                 </div>
             </div>
         </div>
@@ -70,5 +69,16 @@
     
     <!-- Main interactive scripts -->
     <script src="${pageContext.request.contextPath}/assets/js/main.js"></script>
+    <script>
+        document.querySelectorAll('.js-lang-switch').forEach((link) => {
+            link.addEventListener('click', (event) => {
+                event.preventDefault();
+                const url = new URL(window.location.href);
+                url.searchParams.set('lang', link.dataset.lang);
+                window.location.href = url.toString();
+            });
+        });
+    </script>
 </body>
 </html>
+

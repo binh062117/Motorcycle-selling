@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="pageTitle" value="HỒ SƠ CÁ NHÂN - DUCATI" />
 <%@ include file="/common/header.jsp" %>
@@ -10,25 +10,32 @@
         <div class="col-12 col-lg-4">
             <div class="card card-ducati p-4 text-center racing-stripe">
                 <div class="mx-auto rounded-circle bg-secondary bg-opacity-25 d-flex align-items-center justify-content-center mb-3" style="width: 96px; height: 96px;">
-                    <span class="material-symbols-outlined display-3 text-danger">person</span>
+                    <c:choose>
+                        <c:when test="${not empty sessionScope.currentUser.avatarUrl}">
+                            <img src="${sessionScope.currentUser.avatarUrl}" alt="${sessionScope.currentUser.fullName}" class="rounded-circle" style="width:96px;height:96px;object-fit:cover;"/>
+                        </c:when>
+                        <c:otherwise>
+                            <span class="material-symbols-outlined display-3 text-danger">person</span>
+                        </c:otherwise>
+                    </c:choose>
                 </div>
-                <h3 class="font-heading fs-5 text-white mb-1 uppercase">ENZO FERRARI</h3>
-                <span class="font-mono-data text-muted small uppercase" style="font-size:10px;">ID THÀNH VIÊN: #DUC-00042</span>
+                <h3 class="font-heading fs-5 text-white mb-1 uppercase">${sessionScope.currentUser.fullName}</h3>
+                <span class="font-mono-data text-muted small uppercase" style="font-size:10px;">ID THÀNH VIÊN: #DUC-${sessionScope.currentUser.id}</span>
                 
                 <hr class="bg-secondary my-3">
                 
                 <div class="d-flex flex-column gap-2 text-start font-mono-data small text-muted">
                     <div class="d-flex justify-content-between">
                         <span>Lịch hẹn đã đặt:</span>
-                        <span class="text-white fw-bold">3 đơn</span>
+                        <span class="text-white fw-bold">Xem trong lịch sử</span>
                     </div>
                     <div class="d-flex justify-content-between">
                         <span>Hạng thành viên:</span>
-                        <span class="text-danger fw-bold">Rider Gold</span>
+                        <span class="text-danger fw-bold">${sessionScope.currentUser.role.name}</span>
                     </div>
                     <div class="d-flex justify-content-between">
                         <span>Tham gia từ:</span>
-                        <span class="text-white">Q1 2026</span>
+                        <span class="text-white">${sessionScope.currentUser.createdAt.toLocalDate()}</span>
                     </div>
                 </div>
             </div>
@@ -53,24 +60,24 @@
                             <div class="row g-2">
                                 <div class="col-6">
                                     <label class="font-heading text-muted text-uppercase tracking-wider small d-block mb-1">Tên họ</label>
-                                    <input name="txtLastName" class="form-control bg-black border-secondary text-white font-mono-data rounded-0" value="FERRARI" required type="text"/>
+                                    <input name="txtLastName" class="form-control bg-black border-secondary text-white font-mono-data rounded-0" value="${sessionScope.currentUser.lastName}" required type="text"/>
                                 </div>
                                 <div class="col-6">
                                     <label class="font-heading text-muted text-uppercase tracking-wider small d-block mb-1">Tên gọi</label>
-                                    <input name="txtFirstName" class="form-control bg-black border-secondary text-white font-mono-data rounded-0" value="ENZO" required type="text"/>
+                                    <input name="txtFirstName" class="form-control bg-black border-secondary text-white font-mono-data rounded-0" value="${sessionScope.currentUser.firstName}" required type="text"/>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="font-heading text-muted text-uppercase tracking-wider small d-block mb-1">Số điện thoại</label>
-                                <input name="txtPhone" class="form-control bg-black border-secondary text-white font-mono-data rounded-0 validate-phone" value="0912345678" required type="tel"/>
+                                <input name="txtPhone" class="form-control bg-black border-secondary text-white font-mono-data rounded-0 validate-phone" value="${sessionScope.currentUser.phone}" required type="tel"/>
                             </div>
                             <div class="form-group">
                                 <label class="font-heading text-muted text-uppercase tracking-wider small d-block mb-1">Địa chỉ Email</label>
-                                <input name="txtEmail" class="form-control bg-black border-secondary text-white font-mono-data rounded-0" value="enzo@ferrari.it" required type="email" readonly/>
+                                <input name="txtEmail" class="form-control bg-black border-secondary text-white font-mono-data rounded-0" value="${sessionScope.currentUser.email}" required type="email" readonly/>
                             </div>
                             <div class="form-group">
                                 <label class="font-heading text-muted text-uppercase tracking-wider small d-block mb-1">Địa chỉ liên hệ</label>
-                                <textarea name="txtAddress" class="form-control bg-black border-secondary text-white font-mono-data rounded-0" rows="3">Số 3 Nguyễn Lương Bằng, Quận 7, TP.HCM</textarea>
+                                <textarea name="txtAddress" class="form-control bg-black border-secondary text-white font-mono-data rounded-0" rows="3">${sessionScope.currentUser.address}</textarea>
                             </div>
                             
                             <button type="submit" class="btn btn-ducati px-4 py-2 mt-2 align-self-start">CẬP NHẬT THÔNG TIN</button>

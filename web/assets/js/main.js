@@ -88,7 +88,7 @@ function debounce(func, wait) {
 function initDebounceSearch() {
     const searchInputs = document.querySelectorAll('.debounce-search');
     searchInputs.forEach(input => {
-        const targetUrl = input.getAttribute('data-search-url') || 'products.jsp';
+        const targetUrl = input.getAttribute('data-search-url') || 'products';
         input.addEventListener('input', debounce((e) => {
             const query = e.target.value;
             console.log(`Performing live search for: "${query}" to ${targetUrl}`);
@@ -154,22 +154,13 @@ function initColorSelectors() {
     });
 }
 
-// Add to cart click animation & badge updater
+// Add to cart toast only. Cart count is rendered by the backend from the real session cart.
 function initAddToCartHandlers() {
     document.addEventListener('click', (e) => {
         const btn = e.target.classList.contains('btn-add-to-cart') ? e.target : e.target.closest('.btn-add-to-cart');
         if (btn) {
-            e.preventDefault();
             const bikeName = btn.getAttribute('data-bike-name') || 'Xe máy';
             showToast(`Đã thêm ${bikeName} vào giỏ hàng!`, 'success');
-            
-            // Increment cart count floating indicator
-            const cartBadges = document.querySelectorAll('.cart-badge');
-            cartBadges.forEach(badge => {
-                let currentCount = parseInt(badge.textContent) || 0;
-                badge.textContent = currentCount + 1;
-                badge.classList.remove('d-none');
-            });
         }
     });
 }

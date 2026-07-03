@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1200" viewBox="0 0 900 1200">
+  <rect width="900" height="1200" fill="#11161a"/>
+  <path d="M0 900 C180 820 300 950 470 870 C650 780 760 900 900 830 L900 1200 L0 1200 Z" fill="#242016"/>
+  <circle cx="235" cy="820" r="120" fill="none" stroke="#303943" stroke-width="32"/>
+  <circle cx="660" cy="820" r="120" fill="none" stroke="#303943" stroke-width="32"/>
+  <path d="M185 725 L345 635 L525 640 L720 725 L610 790 L355 760 Z" fill="#d9d2c2"/>
+  <path d="M500 620 L650 560 L760 610 L710 680 L560 670 Z" fill="#cf1020"/>
+  <text x="60" y="120" fill="#cf1020" font-family="Arial" font-size="34" font-weight="800" letter-spacing="8">ADVENTURE</text>
+  <text x="60" y="175" fill="#fff" font-family="Arial" font-size="54" font-weight="900">TOURING</text>
+</svg>

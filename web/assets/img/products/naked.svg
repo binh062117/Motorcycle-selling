@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1200" viewBox="0 0 900 1200">
+  <rect width="900" height="1200" fill="#11151a"/>
+  <circle cx="245" cy="820" r="112" fill="none" stroke="#2f3740" stroke-width="32"/>
+  <circle cx="655" cy="820" r="112" fill="none" stroke="#2f3740" stroke-width="32"/>
+  <path d="M190 735 L340 650 L520 640 L695 735 L590 780 L360 760 Z" fill="#cf1020"/>
+  <path d="M405 628 L575 595 L660 655 L510 690 Z" fill="#222a32"/>
+  <path d="M620 626 L760 570 L785 612 L675 680 Z" fill="#d7d7d7"/>
+  <text x="60" y="120" fill="#cf1020" font-family="Arial" font-size="34" font-weight="800" letter-spacing="8">STREET</text>
+  <text x="60" y="175" fill="#fff" font-family="Arial" font-size="54" font-weight="900">NAKED BIKE</text>
+</svg>

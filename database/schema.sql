@@ -47,6 +47,7 @@ CREATE TABLE dbo.users (
     email NVARCHAR(160) NOT NULL CONSTRAINT uq_users_email UNIQUE,
     phone NVARCHAR(30) NULL,
     address NVARCHAR(255) NULL,
+    avatar_url NVARCHAR(500) NULL,
     password_hash NVARCHAR(255) NOT NULL,
     role_id INT NOT NULL,
     is_active BIT NOT NULL CONSTRAINT df_users_is_active DEFAULT 1,
@@ -61,6 +62,7 @@ CREATE TABLE dbo.brands (
     id INT IDENTITY(1,1) NOT NULL CONSTRAINT pk_brands PRIMARY KEY,
     name NVARCHAR(120) NOT NULL CONSTRAINT uq_brands_name UNIQUE,
     origin NVARCHAR(120) NULL,
+    logo_url NVARCHAR(1000) NULL,
     created_at DATETIME2 NOT NULL CONSTRAINT df_brands_created_at DEFAULT SYSUTCDATETIME(),
     updated_at DATETIME2 NOT NULL CONSTRAINT df_brands_updated_at DEFAULT SYSUTCDATETIME()
 );

@@ -47,6 +47,16 @@ public class OrderService {
         return orderDao.findByUser(user);
     }
 
+    public List<Order> findAllOrders() {
+        User admin = new User();
+        admin.setRole(new com.motorcycle.model.Role(1, "Admin"));
+        return orderDao.findByUser(admin);
+    }
+
+    public java.util.Optional<Order> findById(int id) {
+        return orderDao.findById(id);
+    }
+
     public boolean updateStatus(int orderId, String status) {
         return orderDao.updateStatus(orderId, status);
     }

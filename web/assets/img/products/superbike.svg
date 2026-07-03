@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1200" viewBox="0 0 900 1200">
+  <rect width="900" height="1200" fill="#101418"/>
+  <rect y="760" width="900" height="220" fill="#171c22"/>
+  <circle cx="250" cy="820" r="118" fill="none" stroke="#2d343c" stroke-width="34"/>
+  <circle cx="665" cy="820" r="118" fill="none" stroke="#2d343c" stroke-width="34"/>
+  <path d="M185 735 C295 585 520 575 670 670 L760 610 L800 650 L704 750 L430 770 L350 705 Z" fill="#cf1020"/>
+  <path d="M360 705 L500 620 L620 650 L525 745 Z" fill="#f4f4f4" opacity=".9"/>
+  <path d="M210 690 L345 675 L290 745 L150 760 Z" fill="#7d0c16"/>
+  <path d="M650 660 L780 585 L810 618 L710 695 Z" fill="#242a31"/>
+  <text x="60" y="115" fill="#cf1020" font-family="Arial" font-size="34" font-weight="800" letter-spacing="8">SUPERBIKE</text>
+  <text x="60" y="170" fill="#fff" font-family="Arial" font-size="54" font-weight="900">MOTO SALES</text>
+</svg>

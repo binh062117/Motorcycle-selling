@@ -47,6 +47,14 @@ public class CartService {
         return total;
     }
 
+    public int itemCount(HttpSession session) {
+        int count = 0;
+        for (CartItem item : getCart(session)) {
+            count += item.getQuantity();
+        }
+        return count;
+    }
+
     private String safe(String value) {
         return value == null ? "" : value;
     }
