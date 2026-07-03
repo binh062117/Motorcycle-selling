@@ -9,7 +9,7 @@ SET IDENTITY_INSERT dbo.roles OFF;
 SET IDENTITY_INSERT dbo.users ON;
 INSERT INTO dbo.users (id, first_name, last_name, email, phone, address, password_hash, role_id, is_active)
 VALUES
-    (1, N'Admin', N'Ducati', N'admin@ducati.local', N'0900000000', N'FPT University', N'240be518fabd2724f6a3e456ca58e6048541fdf83340c3ebd313a9016c7f9d77', 1, 1),
+    (1, N'Admin', N'Ducati', N'admin@ducati.local', N'0900000000', N'FPT University', N'240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 1, 1),
     (2, N'Enzo', N'Ferrari', N'enzo@ferrari.it', N'0912345678', N'Ho Chi Minh City', N'8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 2, 1);
 SET IDENTITY_INSERT dbo.users OFF;
 

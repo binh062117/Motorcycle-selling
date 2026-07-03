@@ -5,6 +5,7 @@ Database SQL Server cho web bán xe máy.
 ## Kết nối local
 
 - Server: `.\GIAHUNG`
+- JDBC host: `localhost:49679`
 - Database: `MotorcycleSalesDB`
 - SQL user: `motorcycle_app`
 - SQL password: `Motorcycle@123`
@@ -12,7 +13,7 @@ Database SQL Server cho web bán xe máy.
 JDBC URL:
 
 ```text
-jdbc:sqlserver://localhost\GIAHUNG;databaseName=MotorcycleSalesDB;encrypt=true;trustServerCertificate=true
+jdbc:sqlserver://localhost:49679;databaseName=MotorcycleSalesDB;encrypt=true;trustServerCertificate=true
 ```
 
 ## Chạy lại database
