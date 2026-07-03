@@ -97,6 +97,15 @@ Dự án được triển khai theo mô hình **MVC** với **Java Servlet, JSP,
 
 ---
 
+## Thành Viên Thực Hiện
+
+| Thành viên | Vai trò |
+| --- | --- |
+| Nguyễn Quốc Bình | Full-stack Developer |
+| Lê Đoàn Gia Hưng | Full-stack Developer |
+
+---
+
 ## Kiến Trúc Dự Án
 
 ```text
