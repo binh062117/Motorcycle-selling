@@ -1,68 +1,85 @@
-# Motorcycle Selling - MotoSales
+# MotoSales Motorcycle Selling
 
-Ứng dụng Java Web quản lý bán xe máy, phụ kiện, phụ tùng và đặt lịch nhận xe tại showroom. Dự án dùng JSP/Servlet, SQL Server, Tomcat/NetBeans, có đăng nhập Google OAuth, gửi mail Gmail SMTP và thanh toán VNPay sandbox.
+MotoSales is a Java Web application for selling motorcycles, accessories, spare parts, and showroom appointment bookings. It is built with JSP/Servlet, SQL Server, Apache Tomcat, and NetBeans Ant, with real database-backed flows for catalog, cart, checkout, VNPay payment, Google OAuth login, and Gmail invoice emails.
 
-## Tính năng chính
+## Highlights
 
-- Trang chủ hiển thị sản phẩm nổi bật, thương hiệu và ảnh sản phẩm từ SQL Server.
-- Danh sách sản phẩm có lọc theo thương hiệu, danh mục và khoảng giá.
-- Giỏ hàng theo session, badge giỏ hàng lấy từ dữ liệu thật.
-- Checkout đặt lịch nhận xe tại showroom.
-- Thanh toán online qua VNPay sandbox.
-- Gửi mail xác nhận đơn hàng và hóa đơn thanh toán thành công.
-- Đăng nhập thường, đăng ký, quên mật khẩu.
-- Đăng nhập Google OAuth, hiển thị avatar và tên Google trong profile.
-- Profile người dùng, lịch sử đơn, chi tiết đơn.
-- Admin quản lý sản phẩm, thương hiệu, đơn hàng, người dùng.
-- SQL Server schema/seed đầy đủ, không dùng mock/in-memory repository.
-- Hỗ trợ đổi ngôn ngữ VI/EN cho header/footer và trang collection.
+| Area | Features |
+| --- | --- |
+| Customer storefront | Home page, brand browsing, product collection, product detail, cart, checkout |
+| Authentication | Email/password login, registration, password reset, Google OAuth 2.0 login with avatar |
+| Orders | Showroom appointment booking, order history, order detail, admin status update |
+| Payment | VNPay sandbox payment redirect, checksum verification, payment callback recording |
+| Email | Gmail SMTP registration/reset/order confirmation/payment invoice emails |
+| Admin | Manage products, brands, orders, and users from SQL Server |
+| Data | Full SQL Server schema and seed data, no mock/in-memory repositories |
+| UI | Local product artwork, brand logos, VNPay payment panel, VI/EN language switch |
 
-## Công nghệ
+## Tech Stack
 
 - Java Servlet/JSP
 - Apache Tomcat 9
-- NetBeans Ant Web Application
-- SQL Server + JDBC
+- Apache NetBeans Ant Web Application
+- SQL Server + Microsoft JDBC Driver
 - JSTL
 - JavaMail SMTP
 - Google OAuth 2.0
-- VNPay payment gateway sandbox
-- ngrok để public localhost khi test callback
+- VNPay sandbox payment gateway
+- ngrok for public callback testing
 
-## Cấu trúc quan trọng
+## Project Structure
 
 ```text
 database/
-  schema.sql              Tạo database, bảng, user SQL Server
-  seed.sql                Seed dữ liệu xe, mặt hàng, brand, voucher
-  fix_encoding_data.sql   Sửa dữ liệu tiếng Việt nếu DB bị mojibake
-  update_media_assets.sql Cập nhật logo hãng và ảnh sản phẩm
+  schema.sql                 Creates database, tables, constraints, indexes, SQL user
+  seed.sql                   Seeds roles, users, brands, categories, products, vouchers
+  fix_encoding_data.sql      Fixes Vietnamese text if SQL data was imported with bad encoding
+  update_media_assets.sql    Adds brand logo URLs and local product image paths
 
 src/java/com/motorcycle/
-  dao/                    DAO SQL Server
-  filter/                 Encoding, auth, language filter
-  model/                  Entity/model
-  service/                Business logic, mail, payment, OAuth
-  web/DispatcherServlet   Router chính
+  dao/                       SQL Server DAO layer
+  filter/                    Encoding, authentication, authorization, language filters
+  model/                     Domain models
+  service/                   Business logic, mail, payment, OAuth, catalog, cart
+  web/DispatcherServlet.java Main request router
 
 web/
-  assets/                 CSS, JS, ảnh local
-  common/                 Header/footer dùng chung
-  admin/                  Giao diện quản trị
+  assets/                    CSS, JS, local SVG assets
+  common/                    Shared header and footer
+  admin/                     Admin JSP views
+  WEB-INF/web.xml            Servlet/filter mappings
 ```
 
-## Yêu cầu môi trường
+## Prerequisites
 
-- JDK 8 hoặc JDK tương thích với NetBeans/Tomcat hiện tại.
-- Apache Tomcat 9.
-- Apache NetBeans 13 hoặc tương đương.
-- SQL Server.
-- `sqlcmd` nếu muốn chạy script DB bằng terminal.
-- ngrok nếu cần test callback public.
+- JDK 8 or a JDK compatible with your NetBeans/Tomcat setup
+- Apache Tomcat 9
+- Apache NetBeans 13 or newer
+- SQL Server
+- `sqlcmd` for running database scripts from the terminal
+- ngrok for Google OAuth and VNPay callback testing over a public URL
 
-## Cài database SQL Server
+## Quick Start
 
-Chạy trong thư mục project:
+1. Clone the repository.
+2. Run the SQL Server scripts in `database/`.
+3. Open the project in NetBeans.
+4. Attach Apache Tomcat 9.
+5. Configure runtime secrets through Tomcat VM Options or environment variables.
+6. Clean and Build.
+7. Run the project.
+
+Default local URL:
+
+```text
+http://localhost:8080/web_b_n_xe_m_y/
+```
+
+If NetBeans deploys with a different context path, use the path shown in the browser.
+
+## Database Setup
+
+From the project root:
 
 ```powershell
 sqlcmd -S localhost,49679 -E -b -i database\schema.sql
@@ -71,13 +88,13 @@ sqlcmd -S localhost,49679 -E -b -i database\fix_encoding_data.sql
 sqlcmd -S localhost,49679 -E -b -i database\update_media_assets.sql
 ```
 
-Nếu server SQL của bạn không dùng port `49679`, sửa lại connection trong:
+If your SQL Server does not use `localhost,49679`, either edit:
 
 ```text
 src/java/com/motorcycle/dao/DatabaseConnection.java
 ```
 
-Hoặc cấu hình bằng system properties/environment variables:
+or provide runtime configuration:
 
 ```text
 DB_URL=jdbc:sqlserver://localhost:49679;databaseName=MotorcycleSalesDB;encrypt=true;trustServerCertificate=true
@@ -85,35 +102,35 @@ DB_USER=motorcycle_app
 DB_PASSWORD=Motorcycle@123
 ```
 
-Tài khoản seed:
+Seeded accounts:
 
 ```text
 Admin:    admin@ducati.local / admin123
 Customer: enzo@ferrari.it    / 123456
 ```
 
-## Chạy bằng NetBeans
+Seed data includes:
 
-1. Mở NetBeans.
-2. `File -> Open Project`.
-3. Chọn thư mục project.
-4. Gắn server Apache Tomcat 9.
-5. Clean and Build.
-6. Run project.
+- 11 brands
+- 11 categories
+- 21 products covering motorcycles, accessories, parts, and service packages
+- 3 vouchers
 
-URL local thường là:
+## Runtime Configuration
+
+The application reads configuration from Java system properties first, then environment variables.
+
+### SQL Server
 
 ```text
-http://localhost:8080/web_b_n_xe_m_y/
+-DDB_URL=jdbc:sqlserver://localhost:49679;databaseName=MotorcycleSalesDB;encrypt=true;trustServerCertificate=true
+-DDB_USER=motorcycle_app
+-DDB_PASSWORD=Motorcycle@123
 ```
 
-Nếu NetBeans đặt context path khác, dùng context path hiển thị trên browser.
+### Gmail SMTP
 
-## Cấu hình Gmail SMTP
-
-Không hardcode mật khẩu Gmail vào source. Dùng App Password của Google.
-
-Tomcat VM Options hoặc `setenv.bat`:
+Use a Google App Password, not your normal Gmail password.
 
 ```text
 -DMAIL_HOST=smtp.gmail.com
@@ -123,16 +140,16 @@ Tomcat VM Options hoặc `setenv.bat`:
 -DMAIL_FROM=your-gmail@gmail.com
 ```
 
-Luồng gửi mail:
+Emails are sent for:
 
-- Đăng ký tài khoản.
-- Reset mật khẩu.
-- Tạo đơn hàng.
-- Thanh toán VNPay thành công.
+- Account registration
+- Password reset
+- Order confirmation
+- Successful VNPay payment invoice
 
-## Cấu hình Google OAuth
+### Google OAuth
 
-Trong Google Cloud Console tạo OAuth Client loại `Web application`.
+Create an OAuth Client in Google Cloud Console with application type `Web application`.
 
 Authorized JavaScript origins:
 
@@ -140,34 +157,34 @@ Authorized JavaScript origins:
 http://localhost:8080
 ```
 
-Authorized redirect URIs:
+Authorized redirect URI for local development:
 
 ```text
 http://localhost:8080/web_b_n_xe_m_y/google-callback
 ```
 
-Nếu chạy bằng ngrok:
+Authorized redirect URI for ngrok:
 
 ```text
 https://your-ngrok-domain.ngrok-free.dev/web_b_n_xe_m_y/google-callback
 ```
 
-Tomcat VM Options hoặc `setenv.bat`:
+Runtime options:
 
 ```text
 -DGOOGLE_CLIENT_ID=your_google_client_id
 -DGOOGLE_CLIENT_SECRET=your_google_client_secret
 ```
 
-## Cấu hình VNPay sandbox
+### VNPay Sandbox
 
-Đăng ký/lấy credential tại:
+Useful VNPay links:
 
-- Sandbox đăng ký: <https://sandbox.vnpayment.vn/devreg>
+- Sandbox registration: <https://sandbox.vnpayment.vn/devreg>
 - Merchant admin: <https://sandbox.vnpayment.vn/merchantv2/>
-- Tài liệu tích hợp: <https://sandbox.vnpayment.vn/apis/docs/thanh-toan-pay/pay.html>
+- Integration guide: <https://sandbox.vnpayment.vn/apis/docs/thanh-toan-pay/pay.html>
 
-Tomcat VM Options hoặc `setenv.bat`:
+Runtime options:
 
 ```text
 -DVNPAY_PAY_URL=https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
@@ -175,79 +192,157 @@ Tomcat VM Options hoặc `setenv.bat`:
 -DVNPAY_HASH_SECRET=your_vnpay_hash_secret
 ```
 
-Return URL khi test local qua ngrok:
+Return URL when testing through ngrok:
 
 ```text
 https://your-ngrok-domain.ngrok-free.dev/web_b_n_xe_m_y/payment/callback
 ```
 
-Lưu ý: sandbox chỉ dùng để test, không chuyển tiền thật. Muốn nhận tiền thật cần tài khoản VNPay production/live do VNPay cấp.
+Sandbox payments do not move real money. Production payments require production credentials and a signed merchant agreement with VNPay.
 
-## Test VNPay
+## Tomcat `setenv.bat` Example
 
-1. Đăng nhập.
-2. Vào `Bộ sưu tập`.
-3. Thêm sản phẩm vào giỏ.
-4. Vào giỏ hàng và checkout.
-5. Chọn lịch hẹn.
-6. Bấm `THANH TOÁN QUA VNPAY`.
-7. App chuyển sang VNPay sandbox.
-8. Thanh toán xong quay về `/payment/callback`.
-9. App lưu payment vào bảng `payments`, cập nhật đơn và gửi mail hóa đơn nếu SMTP đã cấu hình.
-
-Thông tin thẻ test thường dùng trong sandbox:
+Create or edit:
 
 ```text
-Ngân hàng: NCB
-Số thẻ: 9704198526191432198
-Tên chủ thẻ: NGUYEN VAN A
-Ngày phát hành: 07/15
-OTP: 123456
-Mật khẩu: 1234
+D:\apache-tomcat-9.0.113\bin\setenv.bat
 ```
 
-Ưu tiên dùng thông tin test VNPay gửi qua email nếu khác.
+Example:
 
-## Chạy ngrok
+```bat
+@echo off
+set "CATALINA_OPTS=%CATALINA_OPTS% -DDB_URL=jdbc:sqlserver://localhost:49679;databaseName=MotorcycleSalesDB;encrypt=true;trustServerCertificate=true"
+set "CATALINA_OPTS=%CATALINA_OPTS% -DDB_USER=motorcycle_app"
+set "CATALINA_OPTS=%CATALINA_OPTS% -DDB_PASSWORD=Motorcycle@123"
 
-Nếu đã có ngrok:
+set "CATALINA_OPTS=%CATALINA_OPTS% -DMAIL_HOST=smtp.gmail.com"
+set "CATALINA_OPTS=%CATALINA_OPTS% -DMAIL_PORT=587"
+set "CATALINA_OPTS=%CATALINA_OPTS% -DMAIL_USERNAME=your-gmail@gmail.com"
+set "CATALINA_OPTS=%CATALINA_OPTS% -DMAIL_PASSWORD=your-google-app-password"
+set "CATALINA_OPTS=%CATALINA_OPTS% -DMAIL_FROM=your-gmail@gmail.com"
+
+set "CATALINA_OPTS=%CATALINA_OPTS% -DGOOGLE_CLIENT_ID=your-google-client-id"
+set "CATALINA_OPTS=%CATALINA_OPTS% -DGOOGLE_CLIENT_SECRET=your-google-client-secret"
+
+set "CATALINA_OPTS=%CATALINA_OPTS% -DVNPAY_PAY_URL=https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"
+set "CATALINA_OPTS=%CATALINA_OPTS% -DVNPAY_TMN_CODE=your-vnpay-tmn-code"
+set "CATALINA_OPTS=%CATALINA_OPTS% -DVNPAY_HASH_SECRET=your-vnpay-hash-secret"
+```
+
+Restart Tomcat after editing this file.
+
+## VNPay Test Flow
+
+1. Sign in.
+2. Open the product collection.
+3. Add a product to the cart.
+4. Open the cart and proceed to checkout.
+5. Choose showroom and appointment time.
+6. Click `THANH TOÁN QUA VNPAY`.
+7. The app redirects to VNPay sandbox.
+8. Complete the sandbox payment.
+9. VNPay redirects back to `/payment/callback`.
+10. The app records the payment, updates the order, and sends the invoice email if SMTP is configured.
+
+Common VNPay sandbox card:
+
+```text
+Bank: NCB
+Card number: 9704198526191432198
+Cardholder: NGUYEN VAN A
+Issue date: 07/15
+OTP: 123456
+Password: 1234
+```
+
+Prefer the test data sent by VNPay if your sandbox email contains different values.
+
+## ngrok
+
+Start a tunnel to Tomcat:
 
 ```powershell
 ngrok http 8080
 ```
 
-Nếu dùng ngrok tải trong project:
+If using the downloaded binary:
 
 ```powershell
 D:\SU26\PRJ\tools\ngrok\ngrok.exe http 8080
 ```
 
-URL public sẽ có dạng:
+Public app URL:
 
 ```text
 https://xxxx.ngrok-free.dev/web_b_n_xe_m_y/
 ```
 
-Mỗi lần ngrok đổi domain, cần cập nhật lại Redirect URI Google OAuth và Return URL VNPay.
+Whenever the ngrok domain changes, update:
 
-## Ghi chú bảo mật
+- Google OAuth redirect URI
+- VNPay return URL
 
-- Không commit Gmail App Password, Google Client Secret, VNPay Hash Secret.
-- Cấu hình secret bằng Tomcat VM Options, environment variables hoặc file local ngoài repo.
-- `.gitignore` đã bỏ qua `build/`, `dist/`, `.env`, `nbproject/private/`.
-
-## Các script hữu ích
-
-Build WAR bằng Ant của NetBeans:
+## Build Command
 
 ```powershell
 & 'C:\Program Files\NetBeans-13\netbeans\extide\ant\bin\ant.bat' '-Dj2ee.server.home=D:/apache-tomcat-9.0.113' clean dist
 ```
 
-Sửa dữ liệu tiếng Việt và media trên DB hiện tại:
+The WAR is generated in:
+
+```text
+dist/web_b_n_xe_m_y.war
+```
+
+## Troubleshooting
+
+### Vietnamese text looks corrupted
+
+Run:
 
 ```powershell
 sqlcmd -S localhost,49679 -d MotorcycleSalesDB -U motorcycle_app -P 'Motorcycle@123' -i database\fix_encoding_data.sql -f 65001
+```
+
+Also make sure JSP files use UTF-8:
+
+```jsp
+<%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
+```
+
+### Product images or brand logos are missing
+
+Run:
+
+```powershell
 sqlcmd -S localhost,49679 -d MotorcycleSalesDB -U motorcycle_app -P 'Motorcycle@123' -i database\update_media_assets.sql -f 65001
 ```
+
+### VNPay says the checksum is invalid
+
+Check that:
+
+- `VNPAY_TMN_CODE` matches the VNPay merchant account.
+- `VNPAY_HASH_SECRET` is exactly the sandbox secret.
+- The Return URL matches the public ngrok domain.
+- Tomcat was restarted after changing configuration.
+
+### Google login redirects back without logging in
+
+Check that:
+
+- `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are configured.
+- The redirect URI in Google Cloud exactly matches the app URL.
+- If using ngrok, the current ngrok domain is registered in Google Cloud.
+
+## Security Notes
+
+- Do not commit Gmail App Passwords, Google Client Secrets, VNPay Hash Secrets, or ngrok auth tokens.
+- Keep secrets in Tomcat VM Options, OS environment variables, or local files outside the repository.
+- `.gitignore` excludes build output, `dist/`, `.env`, and `nbproject/private/`.
+
+## Repository Status
+
+The application is intended to be fully database-backed. Legacy in-memory/mock repositories were removed so runtime data comes from SQL Server.
 
