@@ -79,6 +79,7 @@ CREATE TABLE dbo.products (
     sku NVARCHAR(80) NOT NULL CONSTRAINT uq_products_sku UNIQUE,
     brand_id INT NOT NULL,
     category_id INT NOT NULL,
+    product_type NVARCHAR(30) NOT NULL CONSTRAINT df_products_product_type DEFAULT N'MOTORCYCLE',
     price DECIMAL(18,2) NOT NULL,
     stock INT NOT NULL CONSTRAINT df_products_stock DEFAULT 0,
     displacement NVARCHAR(60) NULL,
@@ -91,12 +92,14 @@ CREATE TABLE dbo.products (
     updated_at DATETIME2 NOT NULL CONSTRAINT df_products_updated_at DEFAULT SYSUTCDATETIME(),
     CONSTRAINT fk_products_brands FOREIGN KEY (brand_id) REFERENCES dbo.brands(id),
     CONSTRAINT fk_products_categories FOREIGN KEY (category_id) REFERENCES dbo.categories(id),
+    CONSTRAINT ck_products_type CHECK (product_type IN (N'MOTORCYCLE', N'ACCESSORY', N'PART', N'SERVICE')),
     CONSTRAINT ck_products_price CHECK (price >= 0),
     CONSTRAINT ck_products_stock CHECK (stock >= 0)
 );
 CREATE INDEX ix_products_brand ON dbo.products(brand_id);
 CREATE INDEX ix_products_category ON dbo.products(category_id);
 CREATE INDEX ix_products_active ON dbo.products(is_active);
+CREATE INDEX ix_products_type ON dbo.products(product_type);
 
 CREATE TABLE dbo.vouchers (
     id INT IDENTITY(1,1) NOT NULL CONSTRAINT pk_vouchers PRIMARY KEY,

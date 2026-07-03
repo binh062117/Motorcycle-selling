@@ -27,3 +27,9 @@ Tài khoản test:
 - Admin: `admin@ducati.local` / `admin123`
 - Customer: `enzo@ferrari.it` / `123456`
 
+Seed hiện có:
+
+- `11` thương hiệu
+- `11` danh mục
+- `21` sản phẩm gồm xe máy, phụ kiện, phụ tùng và gói dịch vụ
+- `3` voucher
