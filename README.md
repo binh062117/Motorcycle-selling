@@ -9,14 +9,14 @@
 ![VNPay](https://img.shields.io/badge/VNPay-Sandbox-008fe5?style=flat-square)
 ![Google OAuth](https://img.shields.io/badge/Google%20OAuth-2.0-green?style=flat-square)
 
-# MotoSales Motorcycle Selling
+# MotoSales Commerce Platform
 
-### Website quản lý bán xe máy, phụ kiện và đặt lịch nhận xe tại showroom theo mô hình MVC
+### Java MVC motorcycle commerce system with SQL Server, VNPay payments, Google OAuth login, and Gmail invoice automation
 
 ![Status](https://img.shields.io/badge/status-completed-brightgreen?style=flat-square)
-![Course](https://img.shields.io/badge/course-PRJ301-blue?style=flat-square)
 ![Database](https://img.shields.io/badge/database-real%20SQL%20Server-orange?style=flat-square)
 ![Payment](https://img.shields.io/badge/payment-VNPay%20sandbox-005baa?style=flat-square)
+![Auth](https://img.shields.io/badge/auth-Google%20OAuth-34a853?style=flat-square)
 ![Mail](https://img.shields.io/badge/mail-Gmail%20SMTP-red?style=flat-square)
 
 </div>
@@ -25,15 +25,15 @@
 
 ## Giới Thiệu Dự Án
 
-**MotoSales Motorcycle Selling** là đồ án Java Web cho môn **PRJ301**, mô phỏng hệ thống thương mại điện tử trong lĩnh vực bán xe máy, phụ kiện, phụ tùng và dịch vụ bảo dưỡng. Hệ thống cho phép khách hàng xem danh sách sản phẩm, lọc theo thương hiệu/danh mục/khoảng giá, xem chi tiết, thêm vào giỏ hàng, đặt lịch nhận xe tại showroom và thanh toán qua **VNPay sandbox**.
+**MotoSales Commerce Platform** là hệ thống Java Web MVC dành cho showroom xe máy, hỗ trợ bán xe, phụ kiện, phụ tùng và dịch vụ bảo dưỡng. Hệ thống cho phép khách hàng duyệt danh mục sản phẩm, lọc theo thương hiệu/danh mục/khoảng giá, xem chi tiết, thêm vào giỏ hàng, đặt lịch nhận xe tại showroom và thanh toán online qua **VNPay sandbox**.
 
-Dự án được triển khai theo mô hình **MVC** với **Java Servlet, JSP, JSTL và DAO**, sử dụng **SQL Server** làm hệ quản trị cơ sở dữ liệu chính. Toàn bộ dữ liệu sản phẩm, thương hiệu, đơn hàng, người dùng và thanh toán đều lấy từ database thật, không dùng mock data hoặc repository in-memory.
+Dự án được triển khai theo mô hình **MVC** với **Java Servlet, JSP, JSTL, Service Layer và DAO**, sử dụng **SQL Server** làm hệ quản trị cơ sở dữ liệu chính. Các luồng đăng nhập Google OAuth, gửi mail Gmail SMTP và thanh toán VNPay được cấu hình qua environment/runtime properties, không hardcode secret trong source code.
 
 ---
 
 ## Mục Tiêu Hệ Thống
 
-- Xây dựng website quản lý bán xe máy theo chuẩn Java Web PRJ301.
+- Xây dựng nền tảng Java Web MVC cho showroom xe máy với kiến trúc dễ bảo trì.
 - Tách rõ **Frontend JSP/static assets** và **Backend Servlet/DAO/Service/Model**.
 - Lưu trữ dữ liệu bằng **SQL Server** với schema đầy đủ cho users, brands, products, orders, payments.
 - Cung cấp luồng khách hàng đầy đủ: xem sản phẩm, lọc sản phẩm, thêm giỏ hàng, checkout, đặt lịch showroom.
@@ -41,7 +41,7 @@ Dự án được triển khai theo mô hình **MVC** với **Java Servlet, JSP,
 - Tích hợp **Gmail SMTP** để gửi email xác nhận đơn hàng và hóa đơn thanh toán.
 - Tích hợp **VNPay sandbox** để xử lý thanh toán online.
 - Cung cấp khu vực admin để quản lý sản phẩm, thương hiệu, đơn hàng và người dùng.
-- Viết README và cấu trúc repo rõ ràng để có thể clone, cấu hình và chạy lại dự án.
+- Cung cấp tài liệu triển khai rõ ràng để có thể clone, cấu hình và chạy lại dự án.
 
 ---
 
