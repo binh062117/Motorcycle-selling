@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 120" role="img" aria-label="Yamaha">
+  <rect width="240" height="120" rx="18" fill="none"/>
+  <circle cx="120" cy="60" r="42" fill="none" stroke="#ff1f2d" stroke-width="8"/>
+  <g stroke="#fff" stroke-width="7" stroke-linecap="round">
+    <path d="M120 24v72"/>
+    <path d="M88 78 152 42"/>
+    <path d="M88 42 152 78"/>
+  </g>
+  <circle cx="120" cy="60" r="9" fill="#ff1f2d"/>
+</svg>

@@ -4,6 +4,8 @@ import com.motorcycle.dao.OrderDao;
 import com.motorcycle.dao.PaymentDao;
 import com.motorcycle.model.Order;
 import com.motorcycle.model.Payment;
+import com.motorcycle.model.User;
+import com.motorcycle.websocket.AdminRealtimeHub;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
@@ -99,6 +101,9 @@ public class PaymentService {
         if ("SUCCESS".equalsIgnoreCase(status)) {
             order.get().setStatus("Đã xác nhận");
             orderDao.updateStatus(order.get().getId(), order.get().getStatus());
+            User admin = new User();
+            admin.setRole(new com.motorcycle.model.Role(1, "Admin"));
+            AdminRealtimeHub.orderStatusUpdated(order.get(), orderDao.findByUser(admin));
             mailService.sendPaymentSuccessInvoice(order.get(), payment);
         }
         return payment;

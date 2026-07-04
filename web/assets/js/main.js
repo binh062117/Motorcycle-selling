@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initDebounceSearch();
     initAddToCartHandlers();
     initDeleteConfirmations();
+    initNotificationCenter();
 });
 
 // Utility to show Bootstrap toasts dynamically
@@ -41,6 +42,120 @@ function showToast(message, type = 'success') {
     toastEl.addEventListener('hidden.bs.toast', () => {
         toastEl.remove();
     });
+}
+
+function initNotificationCenter() {
+    const center = document.querySelector('.notification-center');
+    if (!center) return;
+
+    const listEl = document.getElementById('notificationList');
+    const badgeEl = document.getElementById('notificationBadge');
+    const toggleEl = document.getElementById('notificationDropdown');
+    const notificationsUrl = center.dataset.notificationsUrl;
+    const readUrl = center.dataset.notificationsReadUrl;
+    const emptyText = center.dataset.notificationEmpty || 'No notifications yet.';
+    let items = [];
+
+    function render() {
+        if (!listEl) return;
+        if (!items.length) {
+            listEl.innerHTML = `<div class="notification-empty px-3 py-4 text-muted font-mono-data small">${escapeHtml(emptyText)}</div>`;
+            return;
+        }
+        listEl.innerHTML = items.map(item => `
+            <div class="notification-item ${item.read ? '' : 'unread'}" data-notification-id="${item.id}">
+                <div class="notification-item-title">${escapeHtml(item.title)}</div>
+                <div class="notification-item-message">${escapeHtml(item.message)}</div>
+                <div class="notification-item-time">${formatNotificationTime(item.createdAt)}</div>
+            </div>
+        `).join('');
+    }
+
+    function updateBadge(count) {
+        if (!badgeEl) return;
+        const safeCount = Math.max(0, Number(count || 0));
+        badgeEl.textContent = safeCount > 9 ? '9+' : String(safeCount);
+        badgeEl.classList.toggle('d-none', safeCount === 0);
+    }
+
+    function addNotification(notification) {
+        if (!notification) return;
+        items = [notification, ...items.filter(item => item.id !== notification.id)].slice(0, 30);
+        render();
+        const current = badgeEl && !badgeEl.classList.contains('d-none') ? Number(badgeEl.textContent.replace('+', '')) || 0 : 0;
+        updateBadge(current + 1);
+        showToast(`${escapeHtml(notification.title)}: ${escapeHtml(notification.message)}`, 'success');
+    }
+
+    function markRead() {
+        if (!readUrl) return;
+        fetch(readUrl, { method: 'POST', credentials: 'same-origin' })
+            .then(() => {
+                items = items.map(item => ({ ...item, read: true }));
+                updateBadge(0);
+                render();
+            })
+            .catch(error => console.error('Cannot mark notifications as read', error));
+    }
+
+    if (toggleEl) {
+        toggleEl.addEventListener('shown.bs.dropdown', markRead);
+    }
+
+    if (notificationsUrl) {
+        fetch(notificationsUrl, { credentials: 'same-origin' })
+            .then(response => response.ok ? response.json() : null)
+            .then(data => {
+                if (!data) return;
+                items = Array.isArray(data.items) ? data.items : [];
+                render();
+                updateBadge(data.unreadCount || 0);
+            })
+            .catch(error => console.error('Cannot load notifications', error));
+    }
+
+    connectNotificationSocket(notificationsUrl, addNotification);
+}
+
+function connectNotificationSocket(notificationsUrl, onNotification) {
+    if (!window.WebSocket || !notificationsUrl) return;
+    const url = new URL(notificationsUrl, window.location.href);
+    const contextPath = url.pathname.replace(/\/notifications$/, '');
+    const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+    const socket = new WebSocket(protocol + window.location.host + contextPath + '/ws/notifications');
+    socket.onmessage = (message) => {
+        try {
+            const event = JSON.parse(message.data);
+            if (event.type === 'NOTIFICATION') {
+                onNotification(event.notification);
+            }
+        } catch (error) {
+            console.error('Invalid notification event', error);
+        }
+    };
+    socket.onclose = () => window.setTimeout(() => connectNotificationSocket(notificationsUrl, onNotification), 5000);
+}
+
+function formatNotificationTime(value) {
+    if (!value) return '';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return value.replace('T', ' ').slice(0, 16);
+    return new Intl.DateTimeFormat(document.documentElement.lang || 'vi', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+    }).format(date);
+}
+
+function escapeHtml(value) {
+    return String(value == null ? '' : value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
 }
 
 // Fetch API wrapper with Loading State & Error Handling

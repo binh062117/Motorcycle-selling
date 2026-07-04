@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 120" role="img" aria-label="Kawasaki">
+  <rect width="240" height="120" rx="18" fill="none"/>
+  <path d="M52 88V32h24v22l28-22h32L99 61l42 27h-35L76 68v20H52Z" fill="#ff1f2d"/>
+  <path d="M148 32h40v17h-40V32Zm0 22h33v15h-33V54Zm0 19h43v15h-43V73Z" fill="#fff"/>
+</svg>

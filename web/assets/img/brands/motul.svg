@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 120" role="img" aria-label="Motul">
+  <rect x="32" y="34" width="176" height="52" rx="8" fill="#ff1f2d"/>
+  <path d="M50 74V46h20l8 12 8-12h20v28H89V58L80 74h-5L66 58v16H50Zm65-28h19c18 0 29 10 29 28h-17c0-9-4-14-12-14h-2v14h-17V46Zm55 0h17v16c0 7 3 10 9 10 5 0 8-3 8-10V46h17v17c0 17-9 26-25 26s-26-9-26-26V46Z" fill="#fff"/>
+</svg>

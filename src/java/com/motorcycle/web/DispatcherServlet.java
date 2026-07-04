@@ -1,6 +1,7 @@
 package com.motorcycle.web;
 
 import com.motorcycle.model.Brand;
+import com.motorcycle.model.Notification;
 import com.motorcycle.model.Product;
 import com.motorcycle.model.User;
 import com.motorcycle.service.AdminService;
@@ -9,6 +10,7 @@ import com.motorcycle.service.CartService;
 import com.motorcycle.service.CatalogService;
 import com.motorcycle.service.GoogleOAuthService;
 import com.motorcycle.service.OrderService;
+import com.motorcycle.service.NotificationService;
 import com.motorcycle.service.PaymentService;
 import com.motorcycle.util.RequestUtil;
 import java.io.IOException;
@@ -30,6 +32,7 @@ public class DispatcherServlet extends HttpServlet {
     private final CatalogService catalogService = new CatalogService();
     private final CartService cartService = new CartService();
     private final OrderService orderService = new OrderService();
+    private final NotificationService notificationService = new NotificationService();
     private final AdminService adminService = new AdminService();
     private final PaymentService paymentService = new PaymentService();
     private final GoogleOAuthService googleOAuthService = new GoogleOAuthService();
@@ -76,6 +79,10 @@ public class DispatcherServlet extends HttpServlet {
                 googleCallback(request, response);
             } else if ("/products".equals(path)) {
                 products(request, response);
+            } else if ("/price-list".equals(path)) {
+                priceList(request, response);
+            } else if ("/dealers".equals(path)) {
+                dealers(request, response);
             } else if ("/product-detail".equals(path)) {
                 productDetail(request, response);
             } else if ("/cart".equals(path)) {
@@ -88,6 +95,10 @@ public class DispatcherServlet extends HttpServlet {
                 orderDetail(request, response);
             } else if (path.startsWith("/profile")) {
                 profile(request, response, path);
+            } else if ("/notifications".equals(path)) {
+                notifications(request, response);
+            } else if ("/notifications/read".equals(path)) {
+                markNotificationsRead(request, response);
             } else if ("/admin/dashboard".equals(path)) {
                 adminDashboard(request, response);
             } else if (path.startsWith("/admin/manage-product")) {
@@ -111,6 +122,11 @@ public class DispatcherServlet extends HttpServlet {
 
     private void login(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         if (isGet(request)) {
+            Object loginError = request.getSession().getAttribute("loginErrorMessage");
+            if (loginError != null) {
+                request.setAttribute("errorMessage", loginError);
+                request.getSession().removeAttribute("loginErrorMessage");
+            }
             forward(request, response, "/login.jsp");
             return;
         }
@@ -163,21 +179,46 @@ public class DispatcherServlet extends HttpServlet {
     }
 
     private void googleLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String state = java.util.UUID.randomUUID().toString();
-        request.getSession().setAttribute("googleOAuthState", state);
-        response.sendRedirect(googleOAuthService.buildAuthorizationUrl(googleRedirectUri(request), state));
+        try {
+            String state = java.util.UUID.randomUUID().toString();
+            request.getSession().setAttribute("googleOAuthState", state);
+            response.sendRedirect(googleOAuthService.buildAuthorizationUrl(googleRedirectUri(request), state));
+        } catch (RuntimeException ex) {
+            request.getSession().setAttribute("loginErrorMessage", googleLoginErrorMessage(ex));
+            response.sendRedirect(request.getContextPath() + "/login");
+        }
     }
 
     private void googleCallback(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String state = RequestUtil.param(request, "state");
         Object expected = request.getSession().getAttribute("googleOAuthState");
         if (expected == null || !expected.equals(state)) {
-            response.sendRedirect(request.getContextPath() + "/login.jsp?error=google_state");
+            request.getSession().setAttribute("loginErrorMessage", "Phiên đăng nhập Google đã hết hạn. Vui lòng thử lại.");
+            response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
-        User user = googleOAuthService.loginWithCode(RequestUtil.param(request, "code"), googleRedirectUri(request));
-        request.getSession().setAttribute("currentUser", user);
-        response.sendRedirect(request.getContextPath() + "/home");
+        try {
+            User user = googleOAuthService.loginWithCode(RequestUtil.param(request, "code"), googleRedirectUri(request));
+            request.getSession().setAttribute("currentUser", user);
+            response.sendRedirect(request.getContextPath() + "/home");
+        } catch (RuntimeException ex) {
+            request.getSession().setAttribute("loginErrorMessage", googleLoginErrorMessage(ex));
+            response.sendRedirect(request.getContextPath() + "/login");
+        }
+    }
+
+    private String googleLoginErrorMessage(RuntimeException ex) {
+        String message = ex.getMessage();
+        if (message == null || message.trim().isEmpty()) {
+            message = "Không thể đăng nhập bằng Google. Vui lòng kiểm tra cấu hình OAuth.";
+        }
+        if (message.contains("GOOGLE_CLIENT_ID") || message.contains("GOOGLE_CLIENT_SECRET")) {
+            return "Chưa cấu hình Google OAuth cho Tomcat 9. Hãy thêm GOOGLE_CLIENT_ID và GOOGLE_CLIENT_SECRET vào bin\\setenv.bat rồi restart Tomcat.";
+        }
+        if (message.contains("redirect_uri_mismatch")) {
+            return "Redirect URI trong Google Cloud chưa khớp. Cần thêm http://localhost:8080/web_b_n_xe_m_y/google-callback.";
+        }
+        return message;
     }
 
     private void home(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -201,6 +242,15 @@ public class DispatcherServlet extends HttpServlet {
         request.setAttribute("brands", catalogService.findBrands());
         request.setAttribute("categories", catalogService.findCategories());
         forward(request, response, "/products.jsp");
+    }
+
+    private void priceList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setAttribute("products", catalogService.search("", "", "", ""));
+        forward(request, response, "/price-list.jsp");
+    }
+
+    private void dealers(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        forward(request, response, "/dealers.jsp");
     }
 
     private void productDetail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -284,11 +334,49 @@ public class DispatcherServlet extends HttpServlet {
                     RequestUtil.param(request, "txtLastName"),
                     RequestUtil.param(request, "txtPhone"),
                     RequestUtil.param(request, "txtAddress"));
+            response.sendRedirect(request.getContextPath() + "/profile");
+            return;
         } else if ("/profile/change-password".equals(path)) {
             boolean ok = authService.changePassword(user, RequestUtil.param(request, "txtOldPassword"), RequestUtil.param(request, "txtNewPassword"));
             request.getSession().setAttribute("profileMessage", ok ? "Đã đổi mật khẩu." : "Mật khẩu hiện tại không đúng.");
+            response.sendRedirect(request.getContextPath() + "/profile");
+            return;
         }
-        response.sendRedirect(request.getContextPath() + "/profile.jsp");
+        if (user != null && user.isAdmin()) {
+            prepareAdminDashboardAttributes(request);
+        }
+        forward(request, response, "/profile.jsp");
+    }
+
+    private void notifications(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        User user = (User) request.getSession().getAttribute("currentUser");
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json;charset=UTF-8");
+        if (user == null) {
+            response.getWriter().write("{\"items\":[],\"unreadCount\":0}");
+            return;
+        }
+        List<Notification> notifications = notificationService.recentFor(user);
+        StringBuilder json = new StringBuilder();
+        json.append("{\"items\":[");
+        for (int i = 0; i < notifications.size(); i++) {
+            if (i > 0) {
+                json.append(',');
+            }
+            json.append(notificationJson(notifications.get(i)));
+        }
+        json.append("],\"unreadCount\":").append(notificationService.unreadCountFor(user)).append('}');
+        response.getWriter().write(json.toString());
+    }
+
+    private void markNotificationsRead(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        User user = (User) request.getSession().getAttribute("currentUser");
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json;charset=UTF-8");
+        if (user != null) {
+            notificationService.markAllRead(user);
+        }
+        response.getWriter().write("{\"ok\":true,\"unreadCount\":0}");
     }
 
     private void manageProduct(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -329,6 +417,11 @@ public class DispatcherServlet extends HttpServlet {
     }
 
     private void adminDashboard(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        prepareAdminDashboardAttributes(request);
+        forward(request, response, "/admin/dashboard-view.jsp");
+    }
+
+    private void prepareAdminDashboardAttributes(HttpServletRequest request) {
         List<Product> products = catalogService.search("", "", "", "");
         List<com.motorcycle.model.Order> orders = orderService.findAllOrders();
         BigDecimal revenue = BigDecimal.ZERO;
@@ -341,7 +434,7 @@ public class DispatcherServlet extends HttpServlet {
             bookedByProduct.put(product.getId(), 0);
         }
         for (com.motorcycle.model.Order order : orders) {
-            if ("PENDING".equalsIgnoreCase(order.getStatus()) || "NEW".equalsIgnoreCase(order.getStatus())) {
+            if (isPendingOrderStatus(order.getStatus())) {
                 pendingOrders++;
             }
             if (order.getTotal() != null) {
@@ -357,13 +450,30 @@ public class DispatcherServlet extends HttpServlet {
         }
 
         request.setAttribute("productCount", products.size());
+        request.setAttribute("adminProductCount", products.size());
         request.setAttribute("stockTotal", stockTotal);
         request.setAttribute("pendingOrders", pendingOrders);
+        request.setAttribute("adminPendingOrders", pendingOrders);
         request.setAttribute("orderCount", orders.size());
+        request.setAttribute("adminOrderCount", orders.size());
         request.setAttribute("dashboardRevenue", revenue);
+        request.setAttribute("adminDashboardRevenue", revenue);
         request.setAttribute("topProducts", products.size() > 6 ? products.subList(0, 6) : products);
+        request.setAttribute("recentOrders", orders.size() > 8 ? orders.subList(0, 8) : orders);
         request.setAttribute("bookedByProduct", bookedByProduct);
-        forward(request, response, "/admin/dashboard-view.jsp");
+    }
+
+    private boolean isPendingOrderStatus(String status) {
+        if (status == null) {
+            return false;
+        }
+        String normalized = status.toLowerCase();
+        return normalized.contains("pending")
+                || normalized.contains("new")
+                || normalized.contains("chờ")
+                || normalized.contains("cho duyet")
+                || normalized.contains("duyệt")
+                || normalized.contains("duyá");
     }
 
     private void manageBrand(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -425,5 +535,26 @@ public class DispatcherServlet extends HttpServlet {
     private void forward(HttpServletRequest request, HttpServletResponse response, String jsp) throws ServletException, IOException {
         RequestDispatcher dispatcher = request.getRequestDispatcher(jsp);
         dispatcher.forward(request, response);
+    }
+
+    private String notificationJson(Notification notification) {
+        String createdAt = notification.getCreatedAt() == null ? "" : notification.getCreatedAt().toString();
+        return "{"
+                + "\"id\":" + notification.getId() + ","
+                + "\"title\":\"" + jsonEscape(notification.getTitle()) + "\","
+                + "\"message\":\"" + jsonEscape(notification.getMessage()) + "\","
+                + "\"read\":" + notification.isRead() + ","
+                + "\"createdAt\":\"" + jsonEscape(createdAt) + "\""
+                + "}";
+    }
+
+    private String jsonEscape(String value) {
+        if (value == null) {
+            return "";
+        }
+        return value.replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\r", "\\r")
+                .replace("\n", "\\n");
     }
 }

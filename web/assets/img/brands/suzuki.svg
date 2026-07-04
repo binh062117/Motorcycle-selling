@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 120" role="img" aria-label="Suzuki">
+  <rect width="240" height="120" rx="18" fill="none"/>
+  <path d="M119 16 168 44l-31 18 32 19-50 25-50-25 31-18-31-18 50-29Zm0 22-16 8 16 9 16-9-16-8Zm0 39-16 8 16 8 17-8-17-8Z" fill="#ff1f2d"/>
+</svg>

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 120" role="img" aria-label="Ducati">
+  <rect width="240" height="120" rx="18" fill="none"/>
+  <path d="M120 16c29 0 48 8 48 8-1 36-18 62-48 80-30-18-47-44-48-80 0 0 19-8 48-8Z" fill="#ff1f2d"/>
+  <path d="M91 43c16-10 42-14 64-9-25 2-45 11-64 25V43Z" fill="#101418"/>
+  <text x="120" y="52" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="900" font-style="italic" fill="#101418">DUCATI</text>
+</svg>

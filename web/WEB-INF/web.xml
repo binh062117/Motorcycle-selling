@@ -95,6 +95,14 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>DispatcherServlet</servlet-name>
+        <url-pattern>/price-list</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DispatcherServlet</servlet-name>
+        <url-pattern>/dealers</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DispatcherServlet</servlet-name>
         <url-pattern>/product-detail</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
@@ -115,7 +123,19 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>DispatcherServlet</servlet-name>
+        <url-pattern>/profile</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DispatcherServlet</servlet-name>
         <url-pattern>/profile/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DispatcherServlet</servlet-name>
+        <url-pattern>/notifications</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DispatcherServlet</servlet-name>
+        <url-pattern>/notifications/read</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>DispatcherServlet</servlet-name>

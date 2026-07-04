@@ -45,8 +45,8 @@
                     <div class="row g-3">
                         <!-- Showroom Option 1 -->
                         <div class="col-12 col-md-6">
-                            <div onclick="selectShowroom(this, 'Showroom Hà Nội', 1)" class="showroom-card card card-ducati p-4 position-relative cursor-pointer border border-3 border-danger">
-                                <div class="position-absolute top-0 end-0 p-3 text-danger" id="check-icon-1">
+                            <div onclick="selectShowroom(this, 'Showroom Hà Nội', 1)" class="showroom-card card card-ducati p-4 position-relative cursor-pointer">
+                                <div class="position-absolute top-0 end-0 p-3 text-danger d-none" id="check-icon-1">
                                     <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
                                 </div>
                                 <h3 class="font-heading fs-6 text-white mb-2">Showroom Bà Triệu - Hà Nội</h3>
@@ -66,7 +66,7 @@
                                 </div>
                                 <h3 class="font-heading fs-6 text-white mb-2">Showroom Phú Mỹ Hưng - Q7</h3>
                                 <p class="text-muted small mb-3">Số 3 Nguyễn Lương Bằng, Quận 7, TP.HCM</p>
-                                <div class="d-flex align-items-center gap-2 text-muted font-mono-data small">
+                                <div class="d-flex align-items-center gap-2 text-danger font-mono-data small">
                                     <span class="material-symbols-outlined fs-6">distance</span>
                                     <span>Tổng kho đại lý miền Nam</span>
                                 </div>
@@ -75,7 +75,8 @@
                     </div>
                     
                     <!-- Hidden input to store chosen Showroom for MVC submit -->
-                    <input type="hidden" id="selectedShowroomInput" name="txtShowroom" value="Showroom Hà Nội"/>
+                    <input type="hidden" id="selectedShowroomInput" name="txtShowroom" value=""/>
+                    <div id="showroomFeedback" class="text-danger font-mono-data small mt-3 d-none">Vui lòng chọn showroom nhận xe trước khi tiếp tục.</div>
                 </section>
                 
                 <!-- Step 2: Temporal Window (Date & Time) -->
@@ -90,17 +91,22 @@
                             <!-- Mini Calendar selection widget -->
                             <div class="col-12 col-md-6">
                                 <label class="font-heading text-muted text-uppercase tracking-wider small d-block mb-2">Chọn Ngày Nhận Xe</label>
-                                <input name="txtAppointmentDate" id="appointment-date" class="form-control bg-black border-secondary text-white font-mono-data uppercase rounded-0" type="date" required/>
+                                <div class="position-relative">
+                                    <input name="txtAppointmentDate" id="appointment-date" class="form-control bg-black border-secondary text-white font-mono-data uppercase rounded-0 pe-5" type="date" required/>
+                                    <button type="button" class="btn btn-link text-danger p-0 position-absolute top-50 end-0 translate-middle-y me-3 appointment-date-trigger" aria-label="Mở lịch chọn ngày">
+                                        <span class="material-symbols-outlined fs-5">calendar_month</span>
+                                    </button>
+                                </div>
                             </div>
                             
                             <!-- Time select -->
                             <div class="col-12 col-md-6">
-                                <label class="font-heading text-muted text-uppercase tracking-wider small d-block mb-2">Chọn Khung Giờ</label>
+                                <label class="font-heading text-muted text-uppercase tracking-wider small d-block mb-2">Chọn Khung Giờ Tư Vấn</label>
                                 <select name="txtAppointmentTime" class="form-select bg-black border-secondary text-white font-mono-data text-uppercase rounded-0">
-                                    <option value="09:00">09:00 sáng (Tư vấn kỹ thuật)</option>
-                                    <option value="11:00">11:00 trưa (Lái thử V4 S)</option>
-                                    <option value="14:00">14:00 chiều (Xác nhận bàn giao)</option>
-                                    <option value="16:00">16:00 chiều (Lên spec xe)</option>
+                                    <option value="09:00">09:00</option>
+                                    <option value="11:00">11:00</option>
+                                    <option value="14:00">14:00</option>
+                                    <option value="16:00">16:00</option>
                                 </select>
                             </div>
                         </div>
@@ -185,7 +191,7 @@
             <div class="card card-ducati overflow-hidden">
                 <div class="position-relative">
                     <c:set var="firstItem" value="${cartItems[0]}"/>
-                    <img alt="Sản phẩm đặt mua" class="w-100 filter-grayscale" style="filter: grayscale(100%);" src="${pageContext.request.contextPath}/${firstItem.product.imageUrl}" onerror="this.onerror=null;this.src='${pageContext.request.contextPath}/assets/img/product-placeholder.svg';"/>
+                    <img alt="Sản phẩm đặt mua" class="w-100 bike-product-img" src="${pageContext.request.contextPath}/${firstItem.product.imageUrl}" onerror="this.onerror=null;this.src='${pageContext.request.contextPath}/assets/img/product-placeholder.svg';"/>
                     <div class="position-absolute bottom-0 start-0 p-3">
                         <span class="badge bg-danger font-mono-data text-uppercase py-2 px-3 small rounded-0 fw-bold">${empty firstItem ? 'ĐƠN HÀNG' : firstItem.product.category.name}</span>
                     </div>
@@ -247,6 +253,8 @@
 
         // Update hidden input form
         document.getElementById('selectedShowroomInput').value = showroomName;
+        const showroomFeedback = document.getElementById('showroomFeedback');
+        if (showroomFeedback) showroomFeedback.classList.add('d-none');
 
         // Automatically unlock Step 2
         unlockStep2();
@@ -273,8 +281,42 @@
 
     // Temporal Window date change unlocks Step 3
     document.addEventListener('DOMContentLoaded', () => {
+        const checkoutForm = document.querySelector('form.needs-validation-custom');
+        const showroomInput = document.getElementById('selectedShowroomInput');
+        const showroomFeedback = document.getElementById('showroomFeedback');
+
+        if (checkoutForm && showroomInput) {
+            checkoutForm.addEventListener('submit', (event) => {
+                if (!showroomInput.value.trim()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    if (showroomFeedback) showroomFeedback.classList.remove('d-none');
+                    const step1 = document.getElementById('step-1');
+                    if (step1) step1.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, true);
+        }
+
         const dateInput = document.getElementById('appointment-date');
         if (dateInput) {
+            const openDatePicker = () => {
+                if (typeof dateInput.showPicker === 'function') {
+                    dateInput.showPicker();
+                } else {
+                    dateInput.focus();
+                    dateInput.click();
+                }
+            };
+
+            dateInput.addEventListener('keydown', (event) => event.preventDefault());
+            dateInput.addEventListener('paste', (event) => event.preventDefault());
+            dateInput.addEventListener('click', openDatePicker);
+
+            const dateTrigger = document.querySelector('.appointment-date-trigger');
+            if (dateTrigger) {
+                dateTrigger.addEventListener('click', openDatePicker);
+            }
+
             dateInput.addEventListener('change', () => {
                 const step3 = document.getElementById('step-3');
                 step3.classList.remove('opacity-25', 'pointer-events-none');

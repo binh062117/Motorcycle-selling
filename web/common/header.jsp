@@ -8,6 +8,15 @@
 <fmt:setBundle basename="messages" />
 <fmt:message key="app.title" var="defaultTitle" />
 <fmt:message key="nav.search" var="searchPlaceholder" />
+<fmt:message key="common.loading" var="loadingLabel" />
+<fmt:message key="common.cart" var="cartLabel" />
+<fmt:message key="notifications.title" var="notificationTitle" />
+<fmt:message key="notifications.empty" var="notificationEmpty" />
+<fmt:message key="notifications.aria" var="notificationAria" />
+<c:set var="languageSwitchUri" value="${requestScope['javax.servlet.forward.request_uri']}" />
+<c:if test="${empty languageSwitchUri}">
+    <c:set var="languageSwitchUri" value="${pageContext.request.requestURI}" />
+</c:if>
 <c:set var="headerCartCount" value="${empty cartItemCount ? 0 : cartItemCount}" />
 <c:if test="${headerCartCount == 0 && not empty sessionScope.cartItems}">
     <c:forEach var="cartItem" items="${sessionScope.cartItems}">
@@ -44,7 +53,7 @@
     <!-- Loading overlay (AJAX state) -->
     <div id="loading-overlay" class="d-none">
         <div class="spinner-border text-danger" style="width: 3rem; height: 3rem;" role="status">
-            <span class="visually-hidden">Đang tải...</span>
+            <span class="visually-hidden">${loadingLabel}</span>
         </div>
     </div>
 
@@ -87,17 +96,42 @@
                     
                     <!-- Action Icons -->
                     <!-- Shopping Cart Icon -->
-                    <a href="${pageContext.request.contextPath}/cart" class="position-relative d-flex align-items-center justify-content-center p-2 text-white text-decoration-none">
+                    <a href="${pageContext.request.contextPath}/cart" class="cart-nav-link position-relative d-flex align-items-center justify-content-center p-2 text-white text-decoration-none" aria-label="${cartLabel}">
                         <span class="material-symbols-outlined fs-4">shopping_cart</span>
                         <c:if test="${headerCartCount > 0}">
-                            <span class="cart-badge position-absolute top-0 start-50 translate-middle badge rounded-pill bg-danger" style="font-size: 9px; font-family: var(--font-mono); padding: 3px 6px;">${headerCartCount}</span>
+                            <span class="cart-badge badge rounded-pill bg-danger">${headerCartCount}</span>
                         </c:if>
                     </a>
 
-                    <div class="d-flex align-items-center border border-secondary font-mono-data" style="height:32px;font-size:11px;">
-                        <a class="px-2 text-decoration-none js-lang-switch ${sessionScope.appLang == 'vi' ? 'text-danger fw-bold' : 'text-muted'}" href="#" data-lang="vi"><fmt:message key="language.vi" /></a>
+                    <c:if test="${not empty sessionScope.currentUser}">
+                        <div class="dropdown notification-center"
+                             data-notifications-url="${pageContext.request.contextPath}/notifications"
+                             data-notifications-read-url="${pageContext.request.contextPath}/notifications/read"
+                             data-notification-empty="${notificationEmpty}">
+                            <button class="notification-toggle position-relative d-flex align-items-center justify-content-center p-2 text-white"
+                                    type="button"
+                                    id="notificationDropdown"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                    aria-label="${notificationAria}">
+                                <span class="material-symbols-outlined fs-4">notifications</span>
+                                <span id="notificationBadge" class="cart-badge badge rounded-pill bg-danger d-none">0</span>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end notification-menu bg-dark border-secondary text-white mt-2" aria-labelledby="notificationDropdown">
+                                <div class="notification-menu-header border-bottom border-secondary px-3 py-2">
+                                    <span class="font-heading text-uppercase text-danger fw-bold small">${notificationTitle}</span>
+                                </div>
+                                <div id="notificationList" class="notification-list">
+                                    <div class="notification-empty px-3 py-4 text-muted font-mono-data small">${notificationEmpty}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </c:if>
+
+                    <div class="language-switch border border-secondary font-mono-data">
+                        <a class="text-decoration-none js-lang-switch ${sessionScope.appLang == 'vi' ? 'text-danger fw-bold' : 'text-muted'}" href="${languageSwitchUri}?lang=vi" data-lang="vi"><fmt:message key="language.vi" /></a>
                         <span class="text-secondary">|</span>
-                        <a class="px-2 text-decoration-none js-lang-switch ${sessionScope.appLang == 'en' ? 'text-danger fw-bold' : 'text-muted'}" href="#" data-lang="en"><fmt:message key="language.en" /></a>
+                        <a class="text-decoration-none js-lang-switch ${sessionScope.appLang == 'en' ? 'text-danger fw-bold' : 'text-muted'}" href="${languageSwitchUri}?lang=en" data-lang="en"><fmt:message key="language.en" /></a>
                     </div>
                     
                     <!-- User Account Icon / Login Dropdown -->
@@ -126,7 +160,7 @@
                                             </div>
                                         </div>
                                     </li>
-                                    <li><a class="dropdown-item text-white hover:bg-secondary py-2" href="${pageContext.request.contextPath}/profile.jsp"><fmt:message key="account.profile" /></a></li>
+                                    <li><a class="dropdown-item text-white hover:bg-secondary py-2" href="${pageContext.request.contextPath}/profile"><fmt:message key="account.profile" /></a></li>
                                     <li><a class="dropdown-item text-white hover:bg-secondary py-2" href="${pageContext.request.contextPath}/order-history"><fmt:message key="account.orders" /></a></li>
                                     <c:if test="${sessionScope.currentUser.admin}">
                                         <li><a class="dropdown-item text-white hover:bg-secondary py-2" href="${pageContext.request.contextPath}/admin/dashboard"><fmt:message key="account.admin" /></a></li>

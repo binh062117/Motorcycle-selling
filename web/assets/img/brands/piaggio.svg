@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 120" role="img" aria-label="Piaggio">
+  <rect width="240" height="120" rx="18" fill="none"/>
+  <path d="M120 18 174 46v31l-54 25-54-25V46l54-28Z" fill="none" stroke="#ff1f2d" stroke-width="9"/>
+  <path d="M93 79V42h37c18 0 29 9 29 23s-11 23-29 23h-15v-9H93Zm22-15h13c6 0 10-3 10-8s-4-8-10-8h-13v16Z" fill="#fff"/>
+</svg>

@@ -5,12 +5,14 @@ import com.motorcycle.model.CartItem;
 import com.motorcycle.model.Order;
 import com.motorcycle.model.OrderDetail;
 import com.motorcycle.model.User;
+import com.motorcycle.websocket.AdminRealtimeHub;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
 public class OrderService {
     private final MailService mailService = new MailService();
+    private final NotificationService notificationService = new NotificationService();
     private final OrderDao orderDao = new OrderDao();
 
     public Order createOrder(User customer, List<CartItem> cartItems, String showroom, String appointmentDate, String appointmentTime, String paymentMethod) {
@@ -39,7 +41,9 @@ public class OrderService {
         }
         order.setTotal(total);
         orderDao.insert(order);
+        notificationService.notifyOrderCreated(order);
         mailService.sendOrderNotification(order);
+        AdminRealtimeHub.orderCreated(order, findAllOrders());
         return order;
     }
 
@@ -58,6 +62,13 @@ public class OrderService {
     }
 
     public boolean updateStatus(int orderId, String status) {
-        return orderDao.updateStatus(orderId, status);
+        boolean updated = orderDao.updateStatus(orderId, status);
+        if (updated) {
+            java.util.Optional<Order> order = orderDao.findById(orderId);
+            if (order.isPresent()) {
+                AdminRealtimeHub.orderStatusUpdated(order.get(), findAllOrders());
+            }
+        }
+        return updated;
     }
 }

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 120" role="img" aria-label="Brembo">
+  <rect width="240" height="120" rx="18" fill="none"/>
+  <circle cx="58" cy="60" r="31" fill="none" stroke="#ff1f2d" stroke-width="12"/>
+  <circle cx="58" cy="60" r="9" fill="#fff"/>
+  <path d="M91 35h55c19 0 31 8 31 22 0 8-4 14-11 18 10 4 16 11 16 21H91V35Zm24 18v14h25c8 0 12-3 12-7 0-5-4-7-12-7h-25Zm0 29v14h39c0-9-6-14-18-14h-21Z" fill="#fff"/>
+  <path d="M188 41h20v55h-20z" fill="#ff1f2d"/>
+</svg>

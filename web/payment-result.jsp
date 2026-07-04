@@ -11,7 +11,7 @@
             <c:when test="${param.status == 'success' || empty param.status}">
                 <span class="material-symbols-outlined display-1 text-success mb-4" style="font-variation-settings: 'FILL' 1;">check_circle</span>
                 <h1 class="font-heading text-uppercase text-white fs-3 mb-3">THANH TOÁN / ĐẶT LỊCH THÀNH CÔNG</h1>
-                <p class="text-secondary small leading-relaxed mb-4">Đơn hàng đã được ghi nhận trong SQL Server và email xác nhận sẽ được gửi tới khách hàng nếu SMTP đã cấu hình.</p>
+                <p class="text-secondary small leading-relaxed mb-4">Đơn hàng đã được ghi nhận và email xác nhận sẽ được gửi tới khách hàng nếu SMTP đã cấu hình.</p>
                 <c:if test="${not empty order}">
                     <div class="bg-black bg-opacity-50 p-3 mb-4 border border-secondary text-start font-mono-data small">
                         <div class="d-flex justify-content-between mb-1"><span class="text-muted">Mã đơn:</span><span class="text-danger">#${order.code}</span></div>
