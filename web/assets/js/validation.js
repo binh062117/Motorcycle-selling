@@ -20,11 +20,11 @@ function getValidationMessages() {
     }
 
     return {
-        required: 'Trường thông tin này bắt buộc nhập.',
-        email: 'Địa chỉ email không đúng định dạng.',
-        phone: 'Số điện thoại gồm 10 chữ số (Ví dụ: 0987654321).',
-        minLength: (minLen) => `Yêu cầu tối thiểu ${minLen} ký tự.`,
-        passwordMatch: 'Mật khẩu xác nhận không khớp.'
+        required: 'Tr\u01b0\u1eddng th\u00f4ng tin n\u00e0y b\u1eaft bu\u1ed9c nh\u1eadp.',
+        email: '\u0110\u1ecba ch\u1ec9 email kh\u00f4ng \u0111\u00fang \u0111\u1ecbnh d\u1ea1ng.',
+        phone: 'S\u1ed1 \u0111i\u1ec7n tho\u1ea1i g\u1ed3m 10 ch\u1eef s\u1ed1 (V\u00ed d\u1ee5: 0987654321).',
+        minLength: (minLen) => `Y\u00eau c\u1ea7u t\u1ed1i thi\u1ec3u ${minLen} k\u00fd t\u1ef1.`,
+        passwordMatch: 'M\u1eadt kh\u1ea9u x\u00e1c nh\u1eadn kh\u00f4ng kh\u1edbp.'
     };
 }
 

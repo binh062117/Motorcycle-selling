@@ -178,7 +178,7 @@ async function fetchData(url, options = {}) {
         if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
         return await response.json();
     } catch (error) {
-        showToast('Có lỗi xảy ra: ' + error.message, 'danger');
+        showToast('C\u00f3 l\u1ed7i x\u1ea3y ra: ' + error.message, 'danger');
         console.error('Fetch error:', error);
         return null;
     } finally {
@@ -274,8 +274,8 @@ function initAddToCartHandlers() {
     document.addEventListener('click', (e) => {
         const btn = e.target.classList.contains('btn-add-to-cart') ? e.target : e.target.closest('.btn-add-to-cart');
         if (btn) {
-            const bikeName = btn.getAttribute('data-bike-name') || 'Xe máy';
-            showToast(`Đã thêm ${bikeName} vào giỏ hàng!`, 'success');
+            const bikeName = btn.getAttribute('data-bike-name') || 'Xe m\u00e1y';
+            showToast(`\u0110\u00e3 th\u00eam ${bikeName} v\u00e0o gi\u1ecf h\u00e0ng!`, 'success');
         }
     });
 }
@@ -286,7 +286,7 @@ function initDeleteConfirmations() {
         const btn = e.target.classList.contains('btn-delete-confirm') ? e.target : e.target.closest('.btn-delete-confirm');
         if (btn) {
             e.preventDefault();
-            const entityName = btn.getAttribute('data-entity-name') || 'mục';
+            const entityName = btn.getAttribute('data-entity-name') || 'm\u1ee5c';
             const actionUrl = btn.getAttribute('href') || '#';
             
             confirmDeleteModal(entityName, () => {
@@ -304,15 +304,15 @@ function confirmDeleteModal(entityName, onConfirmCallback) {
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title font-heading uppercase text-white">Xác nhận xóa</h5>
+                            <h5 class="modal-title font-heading uppercase text-white">X\u00e1c nh\u1eadn x\u00f3a</h5>
                             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body font-mono-data text-xs">
-                            Bạn có chắc chắn muốn xóa <span id="deleteEntityName" class="text-danger font-bold"></span> này khỏi hệ thống? Hành động này không thể hoàn tác.
+                            B\u1ea1n c\u00f3 ch\u1eafc ch\u1eafn mu\u1ed1n x\u00f3a <span id="deleteEntityName" class="text-danger font-bold"></span> n\u00e0y kh\u1ecfi h\u1ec7 th\u1ed1ng? H\u00e0nh \u0111\u1ed9ng n\u00e0y kh\u00f4ng th\u1ec3 ho\u00e0n t\u00e1c.
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-ducati py-2" data-bs-dismiss="modal">Hủy</button>
-                            <button type="button" id="confirmDeleteBtn" class="btn btn-ducati py-2">Xóa ngay</button>
+                            <button type="button" class="btn btn-outline-ducati py-2" data-bs-dismiss="modal">H\u1ee7y</button>
+                            <button type="button" id="confirmDeleteBtn" class="btn btn-ducati py-2">X\u00f3a ngay</button>
                         </div>
                     </div>
                 </div>

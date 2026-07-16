@@ -81,7 +81,7 @@
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="${pageContext.request.contextPath}/assets/js/main.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/main.js?v=20260713"></script>
 <script>
 let productModal;document.addEventListener('DOMContentLoaded',()=>{productModal=new bootstrap.Modal(document.getElementById('product-modal'));});
 function openProductModal(id='',name='',sku='',brandId='',categoryId='',price='',stock='',disp='',hp='',weight=''){document.getElementById('form-id').value=id;document.getElementById('form-name').value=name;document.getElementById('form-sku').value=sku;document.getElementById('form-price').value=price;document.getElementById('form-stock').value=stock;document.getElementById('form-disp').value=disp;document.getElementById('form-hp').value=hp;document.getElementById('form-weight').value=weight;if(brandId)document.getElementById('form-brand').value=brandId;if(categoryId)document.getElementById('form-category').value=categoryId;productModal.show();}
