@@ -1,0 +1,5 @@
+node_modules/
+artifacts/raw/
+artifacts/review/
+artifacts/*.webm
+pnpm-lock.yaml

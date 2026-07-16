@@ -191,7 +191,16 @@
             <div class="card card-ducati overflow-hidden">
                 <div class="position-relative">
                     <c:set var="firstItem" value="${cartItems[0]}"/>
-                    <img alt="Sản phẩm đặt mua" class="w-100 bike-product-img" src="${pageContext.request.contextPath}/${firstItem.product.imageUrl}" onerror="this.onerror=null;this.src='${pageContext.request.contextPath}/assets/img/product-placeholder.svg';"/>
+                    <c:choose>
+                        <c:when test="${not empty firstItem}">
+                            <img alt="${firstItem.product.name}" class="w-100 bike-product-img" src="${pageContext.request.contextPath}/${firstItem.product.imageUrl}" onerror="this.onerror=null;this.src='${pageContext.request.contextPath}/assets/img/product-placeholder.svg';"/>
+                        </c:when>
+                        <c:otherwise>
+                            <div class="d-flex align-items-center justify-content-center bg-black text-muted" style="min-height:180px;">
+                                <span class="material-symbols-outlined display-4" aria-hidden="true">shopping_cart</span>
+                            </div>
+                        </c:otherwise>
+                    </c:choose>
                     <div class="position-absolute bottom-0 start-0 p-3">
                         <span class="badge bg-danger font-mono-data text-uppercase py-2 px-3 small rounded-0 fw-bold">${empty firstItem ? 'ĐƠN HÀNG' : firstItem.product.category.name}</span>
                     </div>

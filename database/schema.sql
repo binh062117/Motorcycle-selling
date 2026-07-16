@@ -160,6 +160,9 @@ CREATE TABLE dbo.payments (
     CONSTRAINT ck_payments_amount CHECK (amount >= 0)
 );
 CREATE INDEX ix_payments_order ON dbo.payments(order_id);
+CREATE UNIQUE INDEX ux_payments_vnpay_transaction
+    ON dbo.payments(order_id, provider, transaction_code)
+    WHERE transaction_code IS NOT NULL;
 
 CREATE TABLE dbo.reviews (
     id INT IDENTITY(1,1) NOT NULL CONSTRAINT pk_reviews PRIMARY KEY,

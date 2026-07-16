@@ -228,6 +228,8 @@ https://your-ngrok-domain.ngrok-free.dev/web_b_n_xe_m_y/google-callback
 VNPAY_PAY_URL=https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
 VNPAY_TMN_CODE=your_vnpay_tmn_code
 VNPAY_HASH_SECRET=your_vnpay_hash_secret
+# Khuyến nghị khi chạy ngrok hoặc triển khai HTTPS
+APP_BASE_URL=https://your-ngrok-domain.ngrok-free.dev
 ```
 
 Return URL khi dùng ngrok:

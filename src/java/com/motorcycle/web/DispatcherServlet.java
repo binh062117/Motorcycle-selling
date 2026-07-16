@@ -12,10 +12,13 @@ import com.motorcycle.service.GoogleOAuthService;
 import com.motorcycle.service.OrderService;
 import com.motorcycle.service.NotificationService;
 import com.motorcycle.service.PaymentService;
+import com.motorcycle.service.PaymentService.VnPayCallbackResult;
 import com.motorcycle.util.RequestUtil;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -305,9 +308,7 @@ public class DispatcherServlet extends HttpServlet {
         cartService.clear(request.getSession());
         request.getSession().setAttribute("latestOrder", order);
         if ("VNPay".equalsIgnoreCase(RequestUtil.param(request, "txtPaymentMethod"))) {
-            String returnUrl = request.getScheme() + "://" + request.getServerName()
-                    + (request.getServerPort() == 80 || request.getServerPort() == 443 ? "" : ":" + request.getServerPort())
-                    + request.getContextPath() + "/payment/callback";
+            String returnUrl = externalBaseUrl(request) + request.getContextPath() + "/payment/callback";
             response.sendRedirect(paymentService.createVnPayUrl(order, returnUrl, request.getRemoteAddr()));
             return;
         }
@@ -518,14 +519,58 @@ public class DispatcherServlet extends HttpServlet {
     private void payment(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String paymentPath = request.getServletPath() + (request.getPathInfo() == null ? "" : request.getPathInfo());
         if (paymentPath.contains("callback")) {
-            boolean valid = paymentService.verifyVnPayCallback(request.getParameterMap());
-            if (valid) {
-                paymentService.recordVnPayCallback(request.getParameterMap());
-            }
-            response.sendRedirect(request.getContextPath() + "/payment-result.jsp?status=" + (valid ? "success" : "failed"));
+            VnPayCallbackResult result = paymentService.processVnPayCallback(request.getParameterMap());
+            response.sendRedirect(request.getContextPath() + "/payment-result.jsp?status=" + result.getStatus());
             return;
         }
         response.sendRedirect(request.getContextPath() + "/payment-result.jsp");
+    }
+
+    private String externalBaseUrl(HttpServletRequest request) {
+        String configured = runtimeValue("APP_BASE_URL");
+        if (!configured.isEmpty()) {
+            return validateBaseUrl(configured);
+        }
+        String scheme = firstForwardedValue(request.getHeader("X-Forwarded-Proto"));
+        if (!"https".equalsIgnoreCase(scheme) && !"http".equalsIgnoreCase(scheme)) {
+            scheme = request.getScheme();
+        }
+        String host = firstForwardedValue(request.getHeader("X-Forwarded-Host"));
+        if (host.isEmpty()) {
+            host = request.getHeader("Host");
+        }
+        if (host == null || !host.matches("^[A-Za-z0-9.-]+(?::[0-9]{1,5})?$")) {
+            host = request.getServerName() + ((request.getServerPort() == 80 || request.getServerPort() == 443)
+                    ? "" : ":" + request.getServerPort());
+        }
+        return scheme.toLowerCase(java.util.Locale.ROOT) + "://" + host;
+    }
+
+    private String validateBaseUrl(String value) {
+        try {
+            URI uri = new URI(value);
+            if (uri.getUserInfo() != null || uri.getHost() == null
+                    || !("https".equalsIgnoreCase(uri.getScheme()) || "http".equalsIgnoreCase(uri.getScheme()))) {
+                throw new IllegalStateException("APP_BASE_URL không hợp lệ.");
+            }
+            String normalized = uri.getScheme().toLowerCase(java.util.Locale.ROOT) + "://" + uri.getAuthority();
+            return normalized.endsWith("/") ? normalized.substring(0, normalized.length() - 1) : normalized;
+        } catch (URISyntaxException ex) {
+            throw new IllegalStateException("APP_BASE_URL không hợp lệ.", ex);
+        }
+    }
+
+    private String firstForwardedValue(String value) {
+        return value == null ? "" : value.split(",", 2)[0].trim();
+    }
+
+    private String runtimeValue(String key) {
+        String property = System.getProperty(key);
+        if (property != null && !property.trim().isEmpty()) {
+            return property.trim();
+        }
+        String environment = System.getenv(key);
+        return environment == null ? "" : environment.trim();
     }
 
     private boolean isGet(HttpServletRequest request) {

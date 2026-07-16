@@ -647,3 +647,90 @@ h1, h2, h3, h4, h5, h6 {
     color: rgba(255, 255, 255, 0.4) !important;
     opacity: 1;
 }
+
+/* Keep the admin console usable on phones without duplicating layout rules in every JSP. */
+@media (max-width: 767.98px) {
+    .admin-sidebar {
+        width: 100% !important;
+        height: 84px;
+        right: 0;
+        bottom: auto !important;
+        padding-top: 0 !important;
+        border-right: 0 !important;
+        border-bottom: 1px solid var(--border-color);
+        display: block !important;
+        overflow: hidden;
+    }
+
+    .admin-sidebar > div:first-child {
+        height: 36px;
+        margin: 0 !important;
+        padding: 7px 16px 0 !important;
+    }
+
+    .admin-sidebar > div:first-child h1 {
+        font-size: 14px !important;
+        margin: 0 !important;
+    }
+
+    .admin-sidebar > div:first-child p,
+    .admin-sidebar > div:last-child {
+        display: none !important;
+    }
+
+    .admin-sidebar nav {
+        height: 48px;
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    .admin-sidebar .sidebar-link {
+        min-width: 0;
+        min-height: 48px;
+        padding: 4px !important;
+        border-left: 0 !important;
+        border-bottom: 3px solid transparent;
+        gap: 0 !important;
+        justify-content: center;
+    }
+
+    .admin-sidebar .sidebar-link.active {
+        border-bottom-color: #fff;
+    }
+
+    .admin-sidebar .sidebar-link > span:not(.material-symbols-outlined) {
+        display: none;
+    }
+
+    .admin-main {
+        width: 100%;
+        max-width: 100%;
+        margin-left: 0 !important;
+        padding: 108px 16px 32px !important;
+        overflow-x: hidden;
+    }
+
+    .admin-main header {
+        margin-bottom: 1.5rem !important;
+        align-items: flex-start !important;
+    }
+
+    .admin-main header h2 {
+        font-size: 1.35rem !important;
+        overflow-wrap: anywhere;
+    }
+
+    .admin-main .card,
+    .admin-main .table-responsive {
+        max-width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

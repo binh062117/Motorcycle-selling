@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 public class PaymentService {
+    private static final String PROVIDER = "VNPay";
     private final OrderDao orderDao = new OrderDao();
     private final PaymentDao paymentDao = new PaymentDao();
     private final MailService mailService = new MailService();
@@ -58,11 +60,11 @@ public class PaymentService {
         }
     }
 
-    public boolean verifyVnPayCallback(Map<String, String[]> parameterMap) {
+    public VnPayCallbackResult processVnPayCallback(Map<String, String[]> parameterMap) {
         VnPayConfig config = VnPayConfig.fromEnvironment();
         String providedHash = first(parameterMap, "vnp_SecureHash");
         if (!config.isConfigured() || providedHash == null || providedHash.isEmpty()) {
-            return false;
+            return VnPayCallbackResult.invalid("missing_signature");
         }
         java.util.TreeMap<String, String> params = new java.util.TreeMap<String, String>();
         for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
@@ -72,41 +74,86 @@ public class PaymentService {
             }
         }
         try {
-            return providedHash.equalsIgnoreCase(hmacSha512(config.hashSecret, buildQuery(params, true)));
+            String expectedHash = hmacSha512(config.hashSecret, buildQuery(params, true));
+            if (!secureEquals(providedHash, expectedHash)) {
+                return VnPayCallbackResult.invalid("invalid_signature");
+            }
         } catch (Exception ex) {
+            return VnPayCallbackResult.invalid("signature_error");
+        }
+
+        int orderId = parseInt(first(parameterMap, "vnp_TxnRef"));
+        Optional<Order> order = orderDao.findById(orderId);
+        if (!order.isPresent()) {
+            return VnPayCallbackResult.invalid("order_not_found");
+        }
+
+        String tmnCode = first(parameterMap, "vnp_TmnCode");
+        String amount = first(parameterMap, "vnp_Amount");
+        String responseCode = first(parameterMap, "vnp_ResponseCode");
+        String transactionStatus = first(parameterMap, "vnp_TransactionStatus");
+        String transactionNo = first(parameterMap, "vnp_TransactionNo");
+        if (!config.tmnCode.equals(tmnCode)
+                || transactionNo.isEmpty()
+                || !isExpectedAmount(order.get(), amount)
+                || responseCode.isEmpty()
+                || transactionStatus.isEmpty()) {
+            return VnPayCallbackResult.invalid("invalid_transaction_data");
+        }
+
+        boolean successful = "00".equals(responseCode) && "00".equals(transactionStatus);
+        Payment payment = recordCallback(order.get(), PROVIDER, transactionNo,
+                successful ? "SUCCESS" : "FAILED");
+        return successful
+                ? VnPayCallbackResult.success(payment)
+                : VnPayCallbackResult.failed(payment);
+    }
+
+    public Payment recordCallback(Order order, String provider, String transactionCode, String status) {
+        Optional<Payment> existing = paymentDao.findByTransaction(order.getId(), provider, transactionCode);
+        if (existing.isPresent()) {
+            return existing.get();
+        }
+        Payment payment = new Payment();
+        payment.setOrder(order);
+        payment.setAmount(order.getTotal());
+        payment.setProvider(provider);
+        payment.setTransactionCode(transactionCode);
+        payment.setStatus(status);
+        try {
+            paymentDao.insert(payment);
+        } catch (IllegalStateException ex) {
+            Optional<Payment> concurrent = paymentDao.findByTransaction(order.getId(), provider, transactionCode);
+            if (concurrent.isPresent()) {
+                return concurrent.get();
+            }
+            throw ex;
+        }
+        if ("SUCCESS".equalsIgnoreCase(status)) {
+            order.setStatus("Đã xác nhận");
+            orderDao.updateStatus(order.getId(), order.getStatus());
+            User admin = new User();
+            admin.setRole(new com.motorcycle.model.Role(1, "Admin"));
+            AdminRealtimeHub.orderStatusUpdated(order, orderDao.findByUser(admin));
+            mailService.sendPaymentSuccessInvoice(order, payment);
+        }
+        return payment;
+    }
+
+    private boolean isExpectedAmount(Order order, String rawAmount) {
+        try {
+            BigDecimal callbackAmount = new BigDecimal(rawAmount);
+            BigDecimal expectedAmount = order.getTotal().multiply(BigDecimal.valueOf(100)).setScale(0);
+            return callbackAmount.compareTo(expectedAmount) == 0;
+        } catch (NumberFormatException ex) {
             return false;
         }
     }
 
-    public Payment recordVnPayCallback(Map<String, String[]> parameterMap) {
-        int orderId = parseInt(first(parameterMap, "vnp_TxnRef"));
-        String responseCode = first(parameterMap, "vnp_ResponseCode");
-        String transactionNo = first(parameterMap, "vnp_TransactionNo");
-        String status = "00".equals(responseCode) ? "SUCCESS" : "FAILED";
-        return recordCallback(orderId, "VNPay", transactionNo, status);
-    }
-
-    public Payment recordCallback(int orderId, String provider, String transactionCode, String status) {
-        Optional<Order> order = orderDao.findById(orderId);
-        if (!order.isPresent()) {
-            throw new IllegalArgumentException("Không tìm thấy đơn hàng.");
-        }
-        Payment payment = new Payment();
-        payment.setOrder(order.get());
-        payment.setAmount(order.get().getTotal());
-        payment.setProvider(provider);
-        payment.setTransactionCode(transactionCode);
-        payment.setStatus(status);
-        paymentDao.insert(payment);
-        if ("SUCCESS".equalsIgnoreCase(status)) {
-            order.get().setStatus("Đã xác nhận");
-            orderDao.updateStatus(order.get().getId(), order.get().getStatus());
-            User admin = new User();
-            admin.setRole(new com.motorcycle.model.Role(1, "Admin"));
-            AdminRealtimeHub.orderStatusUpdated(order.get(), orderDao.findByUser(admin));
-            mailService.sendPaymentSuccessInvoice(order.get(), payment);
-        }
-        return payment;
+    private boolean secureEquals(String provided, String expected) {
+        return MessageDigest.isEqual(
+                provided.toLowerCase(java.util.Locale.ROOT).getBytes(StandardCharsets.US_ASCII),
+                expected.getBytes(StandardCharsets.US_ASCII));
     }
 
     private String buildQuery(Map<String, String> params, boolean encodeValuesOnly) throws UnsupportedEncodingException {
@@ -188,6 +235,42 @@ public class PaymentService {
             }
             String env = System.getenv(key);
             return env == null || env.trim().isEmpty() ? fallback : env.trim();
+        }
+    }
+
+    public static final class VnPayCallbackResult {
+        private final String status;
+        private final String reason;
+        private final Payment payment;
+
+        private VnPayCallbackResult(String status, String reason, Payment payment) {
+            this.status = status;
+            this.reason = reason;
+            this.payment = payment;
+        }
+
+        public static VnPayCallbackResult success(Payment payment) {
+            return new VnPayCallbackResult("success", "", payment);
+        }
+
+        public static VnPayCallbackResult failed(Payment payment) {
+            return new VnPayCallbackResult("failed", "payment_declined", payment);
+        }
+
+        public static VnPayCallbackResult invalid(String reason) {
+            return new VnPayCallbackResult("invalid", reason, null);
+        }
+
+        public String getStatus() {
+            return status;
+        }
+
+        public String getReason() {
+            return reason;
+        }
+
+        public Payment getPayment() {
+            return payment;
         }
     }
 }

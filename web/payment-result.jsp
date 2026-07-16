@@ -8,7 +8,7 @@
     <c:set var="order" value="${sessionScope.latestOrder}" />
     <div class="card card-ducati p-5 racing-stripe">
         <c:choose>
-            <c:when test="${param.status == 'success' || empty param.status}">
+            <c:when test="${param.status == 'success'}">
                 <span class="material-symbols-outlined display-1 text-success mb-4" style="font-variation-settings: 'FILL' 1;">check_circle</span>
                 <h1 class="font-heading text-uppercase text-white fs-3 mb-3">THANH TOÁN / ĐẶT LỊCH THÀNH CÔNG</h1>
                 <p class="text-secondary small leading-relaxed mb-4">Đơn hàng đã được ghi nhận và email xác nhận sẽ được gửi tới khách hàng nếu SMTP đã cấu hình.</p>
@@ -21,10 +21,15 @@
                     </div>
                 </c:if>
             </c:when>
-            <c:otherwise>
+            <c:when test="${param.status == 'failed'}">
                 <span class="material-symbols-outlined display-1 text-danger mb-4" style="font-variation-settings: 'FILL' 1;">cancel</span>
                 <h1 class="font-heading text-uppercase text-white fs-3 mb-3">GIAO DỊCH THẤT BẠI</h1>
-                <p class="text-secondary small leading-relaxed mb-4">Thanh toán hoặc xác thực callback không thành công. Vui lòng thử lại hoặc liên hệ showroom.</p>
+                <p class="text-secondary small leading-relaxed mb-4">VNPay chưa hoàn tất giao dịch. Đơn hàng chưa được xác nhận thanh toán.</p>
+            </c:when>
+            <c:otherwise>
+                <span class="material-symbols-outlined display-1 text-warning mb-4">verified_user</span>
+                <h1 class="font-heading text-uppercase text-white fs-3 mb-3">KHÔNG THỂ XÁC THỰC GIAO DỊCH</h1>
+                <p class="text-secondary small leading-relaxed mb-4">Thông tin VNPay trả về không hợp lệ hoặc không khớp với đơn hàng. Không có thanh toán nào được ghi nhận.</p>
             </c:otherwise>
         </c:choose>
         <div class="d-flex flex-column gap-2">
