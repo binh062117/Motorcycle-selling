@@ -41,7 +41,7 @@
             <div class="d-flex align-items-center gap-3">
                 <c:choose>
                     <c:when test="${not empty sessionScope.currentUser.avatarUrl}">
-                        <img src="${sessionScope.currentUser.avatarUrl}" alt="${sessionScope.currentUser.fullName}" class="rounded-circle border border-secondary" style="width:40px;height:40px;object-fit:cover;"/>
+                        <img src="${sessionScope.currentUser.avatarUrl}" alt="${sessionScope.currentUser.fullName}" class="rounded-circle border border-secondary" style="width:40px;height:40px;object-fit:cover;" referrerpolicy="no-referrer"/>
                     </c:when>
                     <c:otherwise>
                         <div class="rounded-circle bg-secondary bg-opacity-25 d-flex align-items-center justify-content-center" style="width:40px;height:40px;"><span class="material-symbols-outlined text-white">admin_panel_settings</span></div>

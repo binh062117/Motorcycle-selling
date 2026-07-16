@@ -139,7 +139,7 @@
                         <a href="#" class="d-flex align-items-center justify-content-center p-2 text-white text-decoration-none" id="userMenuDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                             <c:choose>
                                 <c:when test="${not empty sessionScope.currentUser.avatarUrl}">
-                                    <img src="${sessionScope.currentUser.avatarUrl}" alt="${sessionScope.currentUser.fullName}" class="rounded-circle border border-secondary" style="width:28px;height:28px;object-fit:cover;"/>
+                                    <img src="${sessionScope.currentUser.avatarUrl}" alt="${sessionScope.currentUser.fullName}" class="rounded-circle border border-secondary" style="width:28px;height:28px;object-fit:cover;" referrerpolicy="no-referrer"/>
                                 </c:when>
                                 <c:otherwise>
                                     <span class="material-symbols-outlined fs-4">person</span>
@@ -152,7 +152,7 @@
                                     <li class="px-3 py-2 border-bottom border-secondary">
                                         <div class="d-flex align-items-center gap-2">
                                             <c:if test="${not empty sessionScope.currentUser.avatarUrl}">
-                                                <img src="${sessionScope.currentUser.avatarUrl}" alt="${sessionScope.currentUser.fullName}" class="rounded-circle border border-secondary" style="width:34px;height:34px;object-fit:cover;"/>
+                                                <img src="${sessionScope.currentUser.avatarUrl}" alt="${sessionScope.currentUser.fullName}" class="rounded-circle border border-secondary" style="width:34px;height:34px;object-fit:cover;" referrerpolicy="no-referrer"/>
                                             </c:if>
                                             <div>
                                                 <div class="text-white fw-bold text-uppercase">${sessionScope.currentUser.fullName}</div>

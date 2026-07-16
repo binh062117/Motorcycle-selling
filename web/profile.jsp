@@ -17,7 +17,7 @@
                 <div class="mx-auto rounded-circle bg-secondary bg-opacity-25 d-flex align-items-center justify-content-center mb-3" style="width: 96px; height: 96px;">
                     <c:choose>
                         <c:when test="${not empty sessionScope.currentUser.avatarUrl}">
-                            <img src="${sessionScope.currentUser.avatarUrl}" alt="${sessionScope.currentUser.fullName}" class="rounded-circle" style="width:96px;height:96px;object-fit:cover;"/>
+                            <img src="${sessionScope.currentUser.avatarUrl}" alt="${sessionScope.currentUser.fullName}" class="rounded-circle" style="width:96px;height:96px;object-fit:cover;" referrerpolicy="no-referrer"/>
                         </c:when>
                         <c:otherwise>
                             <span class="material-symbols-outlined display-3 text-danger">person</span>

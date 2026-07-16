@@ -12,6 +12,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -48,15 +49,32 @@ public class GoogleOAuthService {
                         + "&redirect_uri=" + encode(redirectUri)
                         + "&grant_type=authorization_code");
         String accessToken = jsonValue(tokenJson, "access_token");
+        String idToken = jsonValue(tokenJson, "id_token");
         if (accessToken.isEmpty()) {
             throw new IllegalArgumentException("Không nhận được access token từ Google.");
         }
-        String profileJson = get("https://www.googleapis.com/oauth2/v2/userinfo", accessToken);
+        String profileJson = get("https://openidconnect.googleapis.com/v1/userinfo", accessToken);
+        String idTokenPayload = decodeJwtPayload(idToken);
         String email = jsonValue(profileJson, "email");
         String givenName = jsonValue(profileJson, "given_name");
         String familyName = jsonValue(profileJson, "family_name");
         String name = jsonValue(profileJson, "name");
-        String picture = jsonValue(profileJson, "picture");
+        String picture = normalizePictureUrl(jsonValue(profileJson, "picture"));
+        if (email.isEmpty()) {
+            email = jsonValue(idTokenPayload, "email");
+        }
+        if (givenName.isEmpty()) {
+            givenName = jsonValue(idTokenPayload, "given_name");
+        }
+        if (familyName.isEmpty()) {
+            familyName = jsonValue(idTokenPayload, "family_name");
+        }
+        if (name.isEmpty()) {
+            name = jsonValue(idTokenPayload, "name");
+        }
+        if (picture.isEmpty()) {
+            picture = normalizePictureUrl(jsonValue(idTokenPayload, "picture"));
+        }
         if (email.isEmpty()) {
             throw new IllegalArgumentException("Google không trả về email.");
         }
@@ -132,8 +150,87 @@ public class GoogleOAuthService {
     }
 
     private String jsonValue(String json, String key) {
-        Matcher matcher = Pattern.compile("\"" + Pattern.quote(key) + "\"\\s*:\\s*\"([^\"]*)\"").matcher(json);
-        return matcher.find() ? matcher.group(1).replace("\\/", "/") : "";
+        if (json == null || json.isEmpty()) {
+            return "";
+        }
+        Matcher matcher = Pattern.compile("\"" + Pattern.quote(key) + "\"\\s*:\\s*\"((?:\\\\.|[^\"\\\\])*)\"").matcher(json);
+        return matcher.find() ? unescapeJsonString(matcher.group(1)) : "";
+    }
+
+    private String unescapeJsonString(String value) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < value.length(); i++) {
+            char current = value.charAt(i);
+            if (current != '\\' || i + 1 >= value.length()) {
+                result.append(current);
+                continue;
+            }
+            char escaped = value.charAt(++i);
+            switch (escaped) {
+                case '"':
+                case '\\':
+                case '/':
+                    result.append(escaped);
+                    break;
+                case 'b':
+                    result.append('\b');
+                    break;
+                case 'f':
+                    result.append('\f');
+                    break;
+                case 'n':
+                    result.append('\n');
+                    break;
+                case 'r':
+                    result.append('\r');
+                    break;
+                case 't':
+                    result.append('\t');
+                    break;
+                case 'u':
+                    if (i + 4 < value.length()) {
+                        String hex = value.substring(i + 1, i + 5);
+                        try {
+                            result.append((char) Integer.parseInt(hex, 16));
+                            i += 4;
+                        } catch (NumberFormatException ex) {
+                            result.append("\\u").append(hex);
+                            i += 4;
+                        }
+                    } else {
+                        result.append("\\u");
+                    }
+                    break;
+                default:
+                    result.append(escaped);
+                    break;
+            }
+        }
+        return result.toString();
+    }
+
+    private String decodeJwtPayload(String token) {
+        if (token == null || token.trim().isEmpty()) {
+            return "";
+        }
+        String[] parts = token.split("\\.");
+        if (parts.length < 2) {
+            return "";
+        }
+        try {
+            byte[] payload = Base64.getUrlDecoder().decode(parts[1]);
+            return new String(payload, StandardCharsets.UTF_8);
+        } catch (IllegalArgumentException ex) {
+            return "";
+        }
+    }
+
+    private String normalizePictureUrl(String picture) {
+        if (picture == null) {
+            return "";
+        }
+        String trimmed = picture.trim();
+        return (trimmed.startsWith("https://") || trimmed.startsWith("http://")) ? trimmed : "";
     }
 
     private String encode(String value) {
