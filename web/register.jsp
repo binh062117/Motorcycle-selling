@@ -36,7 +36,7 @@
         <section class="position-relative z-2 w-100 px-3" style="max-width: 460px;">
             <div class="glass-panel p-4 p-md-5 shadow-lg position-relative overflow-hidden racing-stripe">
                 <div class="d-flex flex-column align-items-center align-items-lg-start mb-4 select-none">
-                    <span class="font-heading fs-4 fw-black text-danger tracking-tighter uppercase leading-none m-0" style="font-weight: 900;">DUCATI CORSE</span>
+                    <span class="font-heading fs-4 fw-black text-danger tracking-tighter uppercase leading-none m-0" style="font-weight: 900;">DUCATI SHOWROOM</span>
                     <div class="bg-danger mt-2" style="width: 48px; height: 3px;"></div>
                 </div>
 

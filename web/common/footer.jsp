@@ -1,4 +1,4 @@
-﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <fmt:message key="footer.shareAria" var="shareAria" />
 <fmt:message key="common.close" var="closeLabel" />
     
@@ -10,7 +10,7 @@
                 <!-- Column 1: Brand Info -->
                 <div class="col-12 col-md-5 col-lg-6 mb-4 mb-md-0">
                     <div class="d-flex flex-column align-items-start mb-3">
-                        <span class="font-heading fs-4 fw-black text-danger tracking-tighter uppercase leading-none m-0" style="font-weight:900;">DUCATI CORSE</span>
+                        <span class="font-heading fs-4 fw-black text-danger tracking-tighter uppercase leading-none m-0" style="font-weight:900;">DUCATI SHOWROOM</span>
                         <span class="font-mono-data text-muted uppercase leading-none mt-1" style="font-size:10px; letter-spacing: 0.3em;">Borgo Panigale — Italy</span>
                     </div>
                     <p class="text-muted small max-w-sm mb-4" style="max-width: 400px; line-height: 1.6;">
@@ -111,7 +111,7 @@
         if (shareModal) {
             shareModal.addEventListener('show.bs.modal', () => {
                 const pageUrl = window.location.href;
-                const pageTitle = document.title || 'Ducati Corse';
+                const pageTitle = document.title || 'Ducati Showroom';
                 const encodedUrl = encodeURIComponent(pageUrl);
                 const encodedTitle = encodeURIComponent(pageTitle);
                 const targets = {

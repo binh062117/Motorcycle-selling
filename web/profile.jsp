@@ -9,6 +9,8 @@
 <fmt:message key="profile.pageTitle" var="profilePageTitle" />
 <c:set var="pageTitle" value="${profilePageTitle}" />
 <%@ include file="/common/header.jsp" %>
+<c:set var="passwordTabActive" value="${param.tab == 'password'}" />
+<c:set var="profileMessageType" value="${empty sessionScope.profileMessageType ? 'danger' : sessionScope.profileMessageType}" />
 
 <main class="py-5 container-fluid px-4 max-w-container-max mx-auto">
     <div class="row g-4">
@@ -92,15 +94,15 @@
             <div class="card card-ducati p-4">
                 <ul class="nav nav-tabs border-secondary mb-4 gap-3" id="profileTab" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active font-heading text-uppercase tracking-wider bg-transparent border-0 border-bottom border-3 border-danger text-white pb-3" id="info-tab" data-bs-toggle="tab" data-bs-target="#info-pane" type="button" role="tab" aria-controls="info-pane" aria-selected="true"><fmt:message key="profile.personalInfo" /></button>
+                        <button class="nav-link ${passwordTabActive ? '' : 'active'} font-heading text-uppercase tracking-wider bg-transparent border-0 border-bottom border-3 ${passwordTabActive ? 'border-transparent text-secondary' : 'border-danger text-white'} pb-3" id="info-tab" data-bs-toggle="tab" data-bs-target="#info-pane" type="button" role="tab" aria-controls="info-pane" aria-selected="${passwordTabActive ? 'false' : 'true'}"><fmt:message key="profile.personalInfo" /></button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link font-heading text-uppercase tracking-wider bg-transparent border-0 border-bottom border-3 border-transparent text-secondary pb-3" id="pwd-tab" data-bs-toggle="tab" data-bs-target="#pwd-pane" type="button" role="tab" aria-controls="pwd-pane" aria-selected="false"><fmt:message key="profile.changePassword" /></button>
+                        <button class="nav-link ${passwordTabActive ? 'active' : ''} font-heading text-uppercase tracking-wider bg-transparent border-0 border-bottom border-3 ${passwordTabActive ? 'border-danger text-white' : 'border-transparent text-secondary'} pb-3" id="pwd-tab" data-bs-toggle="tab" data-bs-target="#pwd-pane" type="button" role="tab" aria-controls="pwd-pane" aria-selected="${passwordTabActive ? 'true' : 'false'}"><fmt:message key="profile.changePassword" /></button>
                     </li>
                 </ul>
 
                 <div class="tab-content" id="profileTabContent">
-                    <div class="tab-pane fade show active" id="info-pane" role="tabpanel" aria-labelledby="info-tab">
+                    <div class="tab-pane fade ${passwordTabActive ? '' : 'show active'}" id="info-pane" role="tabpanel" aria-labelledby="info-tab">
                         <form action="${pageContext.request.contextPath}/profile/update" method="post" class="needs-validation-custom d-flex flex-column gap-3" novalidate>
                             <div class="row g-2">
                                 <div class="col-6">
@@ -129,8 +131,21 @@
                         </form>
                     </div>
 
-                    <div class="tab-pane fade" id="pwd-pane" role="tabpanel" aria-labelledby="pwd-tab">
+                    <div class="tab-pane fade ${passwordTabActive ? 'show active' : ''}" id="pwd-pane" role="tabpanel" aria-labelledby="pwd-tab">
+                        <c:if test="${not empty sessionScope.profileMessage}">
+                            <div class="alert alert-${profileMessageType} rounded-0 font-mono-data text-xs text-uppercase py-2" role="alert">
+                                ${sessionScope.profileMessage}
+                            </div>
+                        </c:if>
                         <form action="${pageContext.request.contextPath}/profile/change-password" method="post" class="needs-validation-custom d-flex flex-column gap-3" novalidate>
+                            <div class="form-group">
+                                <label class="font-heading text-muted text-uppercase tracking-wider small d-block mb-1">Email xác minh</label>
+                                <input name="txtVerifyEmail" class="form-control bg-black border-secondary text-white font-mono-data rounded-0" required type="email"/>
+                            </div>
+                            <div class="form-group">
+                                <label class="font-heading text-muted text-uppercase tracking-wider small d-block mb-1">Số điện thoại xác minh</label>
+                                <input name="txtVerifyPhone" class="form-control bg-black border-secondary text-white font-mono-data rounded-0 validate-phone" required type="tel"/>
+                            </div>
                             <div class="form-group">
                                 <label class="font-heading text-muted text-uppercase tracking-wider small d-block mb-1"><fmt:message key="profile.currentPassword" /></label>
                                 <input name="txtOldPassword" class="form-control bg-black border-secondary text-white font-mono-data rounded-0" required type="password"/>
@@ -141,11 +156,13 @@
                             </div>
                             <div class="form-group">
                                 <label class="font-heading text-muted text-uppercase tracking-wider small d-block mb-1"><fmt:message key="profile.confirmNewPassword" /></label>
-                                <input id="confirmPassword" class="form-control bg-black border-secondary text-white font-mono-data rounded-0" required type="password"/>
+                                <input name="txtConfirmNewPassword" id="confirmPassword" class="form-control bg-black border-secondary text-white font-mono-data rounded-0" required type="password" minlength="6"/>
                             </div>
 
                             <button type="submit" class="btn btn-ducati px-4 py-2 mt-2 align-self-start"><fmt:message key="profile.confirmPasswordChange" /></button>
                         </form>
+                        <c:remove var="profileMessage" scope="session" />
+                        <c:remove var="profileMessageType" scope="session" />
                     </div>
                 </div>
             </div>

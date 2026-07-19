@@ -16,7 +16,6 @@ import com.motorcycle.service.PaymentService.VnPayCallbackResult;
 import com.motorcycle.util.RequestUtil;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.URLEncoder;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -25,12 +24,14 @@ import java.util.Map;
 import java.util.Optional;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 public class DispatcherServlet extends HttpServlet {
+    private static final String REMEMBER_COOKIE = "ducati_remember";
     private final AuthService authService = new AuthService();
     private final CatalogService catalogService = new CatalogService();
     private final CartService cartService = new CartService();
@@ -130,6 +131,11 @@ public class DispatcherServlet extends HttpServlet {
                 request.setAttribute("errorMessage", loginError);
                 request.getSession().removeAttribute("loginErrorMessage");
             }
+            Object loginSuccess = request.getSession().getAttribute("loginSuccessMessage");
+            if (loginSuccess != null) {
+                request.setAttribute("successMessage", loginSuccess);
+                request.getSession().removeAttribute("loginSuccessMessage");
+            }
             forward(request, response, "/login.jsp");
             return;
         }
@@ -139,11 +145,14 @@ public class DispatcherServlet extends HttpServlet {
             forward(request, response, "/login.jsp");
             return;
         }
-        request.getSession().setAttribute("currentUser", user.get());
+        signIn(request, response, user.get(), "on".equalsIgnoreCase(RequestUtil.param(request, "remember")));
         response.sendRedirect(request.getContextPath() + (user.get().isAdmin() ? "/admin/dashboard" : "/home"));
     }
 
     private void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        User user = (User) request.getSession().getAttribute("currentUser");
+        authService.clearRememberToken(user);
+        clearRememberCookie(request, response);
         request.getSession().invalidate();
         response.sendRedirect(request.getContextPath() + "/home");
     }
@@ -153,14 +162,19 @@ public class DispatcherServlet extends HttpServlet {
             forward(request, response, "/register.jsp");
             return;
         }
-        User user = authService.register(
-                RequestUtil.param(request, "txtFirstName"),
-                RequestUtil.param(request, "txtLastName"),
-                RequestUtil.param(request, "txtEmail"),
-                RequestUtil.param(request, "txtPhone"),
-                RequestUtil.param(request, "txtPassword"));
-        request.getSession().setAttribute("currentUser", user);
-        response.sendRedirect(request.getContextPath() + "/home");
+        try {
+            User user = authService.register(
+                    RequestUtil.param(request, "txtFirstName"),
+                    RequestUtil.param(request, "txtLastName"),
+                    RequestUtil.param(request, "txtEmail"),
+                    RequestUtil.param(request, "txtPhone"),
+                    RequestUtil.param(request, "txtPassword"));
+            signIn(request, response, user, false);
+            response.sendRedirect(request.getContextPath() + "/home");
+        } catch (IllegalArgumentException ex) {
+            request.setAttribute("errorMessage", ex.getMessage());
+            forward(request, response, "/register.jsp");
+        }
     }
 
     private void forgotPassword(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -168,8 +182,17 @@ public class DispatcherServlet extends HttpServlet {
             forward(request, response, "/forgot-password.jsp");
             return;
         }
-        String token = authService.createResetToken(RequestUtil.param(request, "txtEmail"));
-        response.sendRedirect(request.getContextPath() + "/reset-password.jsp?token=" + URLEncoder.encode(token, "UTF-8"));
+        try {
+            String token = authService.createResetTokenAfterIdentityCheck(
+                    RequestUtil.param(request, "txtEmail"),
+                    RequestUtil.param(request, "txtPhone"));
+            request.setAttribute("resetToken", token);
+            request.setAttribute("resetEmail", RequestUtil.param(request, "txtEmail"));
+            forward(request, response, "/reset-password.jsp");
+        } catch (IllegalArgumentException ex) {
+            request.setAttribute("errorMessage", ex.getMessage());
+            forward(request, response, "/forgot-password.jsp");
+        }
     }
 
     private void resetPassword(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -177,8 +200,18 @@ public class DispatcherServlet extends HttpServlet {
             forward(request, response, "/reset-password.jsp");
             return;
         }
-        boolean ok = authService.resetPassword(RequestUtil.param(request, "token"), RequestUtil.param(request, "txtPassword"));
-        response.sendRedirect(request.getContextPath() + (ok ? "/login.jsp" : "/forgot-password.jsp"));
+        try {
+            authService.resetPassword(
+                    RequestUtil.param(request, "token"),
+                    RequestUtil.param(request, "txtPassword"),
+                    RequestUtil.param(request, "txtConfirmPassword"));
+            request.getSession().setAttribute("loginSuccessMessage", "M\u1eadt kh\u1ea9u \u0111\u00e3 \u0111\u01b0\u1ee3c \u0111\u1ed5i. Vui l\u00f2ng \u0111\u0103ng nh\u1eadp l\u1ea1i.");
+            response.sendRedirect(request.getContextPath() + "/login");
+        } catch (IllegalArgumentException ex) {
+            request.setAttribute("errorMessage", ex.getMessage());
+            request.setAttribute("resetToken", RequestUtil.param(request, "token"));
+            forward(request, response, "/reset-password.jsp");
+        }
     }
 
     private void googleLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -338,6 +371,23 @@ public class DispatcherServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/profile");
             return;
         } else if ("/profile/change-password".equals(path)) {
+            if (System.currentTimeMillis() >= 0) {
+                try {
+                    authService.changePassword(user,
+                            RequestUtil.param(request, "txtVerifyEmail"),
+                            RequestUtil.param(request, "txtVerifyPhone"),
+                            RequestUtil.param(request, "txtOldPassword"),
+                            RequestUtil.param(request, "txtNewPassword"),
+                            RequestUtil.param(request, "txtConfirmNewPassword"));
+                    request.getSession().setAttribute("profileMessage", "\u0110\u00e3 \u0111\u1ed5i m\u1eadt kh\u1ea9u.");
+                    request.getSession().setAttribute("profileMessageType", "success");
+                } catch (IllegalArgumentException ex) {
+                    request.getSession().setAttribute("profileMessage", ex.getMessage());
+                    request.getSession().setAttribute("profileMessageType", "danger");
+                }
+                response.sendRedirect(request.getContextPath() + "/profile?tab=password");
+                return;
+            }
             boolean ok = authService.changePassword(user, RequestUtil.param(request, "txtOldPassword"), RequestUtil.param(request, "txtNewPassword"));
             request.getSession().setAttribute("profileMessage", ok ? "Đã đổi mật khẩu." : "Mật khẩu hiện tại không đúng.");
             response.sendRedirect(request.getContextPath() + "/profile");
@@ -575,6 +625,37 @@ public class DispatcherServlet extends HttpServlet {
 
     private boolean isGet(HttpServletRequest request) {
         return "GET".equalsIgnoreCase(request.getMethod());
+    }
+
+    private void signIn(HttpServletRequest request, HttpServletResponse response, User user, boolean remember) {
+        request.changeSessionId();
+        request.getSession().setAttribute("currentUser", user);
+        if (remember) {
+            Cookie cookie = new Cookie(REMEMBER_COOKIE, authService.issueRememberToken(user));
+            cookie.setHttpOnly(true);
+            cookie.setPath(cookiePath(request));
+            cookie.setMaxAge(AuthService.REMEMBER_DAYS * 24 * 60 * 60);
+            if (request.isSecure()) {
+                cookie.setSecure(true);
+            }
+            response.addCookie(cookie);
+        } else {
+            authService.clearRememberToken(user);
+            clearRememberCookie(request, response);
+        }
+    }
+
+    private void clearRememberCookie(HttpServletRequest request, HttpServletResponse response) {
+        Cookie cookie = new Cookie(REMEMBER_COOKIE, "");
+        cookie.setHttpOnly(true);
+        cookie.setPath(cookiePath(request));
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+    }
+
+    private String cookiePath(HttpServletRequest request) {
+        String contextPath = request.getContextPath();
+        return contextPath == null || contextPath.isEmpty() ? "/" : contextPath;
     }
 
     private void forward(HttpServletRequest request, HttpServletResponse response, String jsp) throws ServletException, IOException {

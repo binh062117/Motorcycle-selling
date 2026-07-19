@@ -66,7 +66,13 @@
                             <img src="${pageContext.request.contextPath}/${brand.logoUrl}" alt="${brand.name} logo" onerror="this.classList.add('d-none');"/>
                         </div>
                         <span class="brand-card-title">${brand.name}</span>
-                        <span class="brand-card-origin">${brand.origin}</span>
+                        <c:set var="brandOriginKey" value="brand.origin.${brand.originCode}" />
+                        <span class="brand-card-origin">
+                            <c:choose>
+                                <c:when test="${brand.originCode != 'unknown'}"><fmt:message key="${brandOriginKey}" /></c:when>
+                                <c:otherwise>${brand.origin}</c:otherwise>
+                            </c:choose>
+                        </span>
                     </a>
                 </div>
             </c:forEach>

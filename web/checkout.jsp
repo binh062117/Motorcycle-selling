@@ -132,7 +132,7 @@
                             </div>
                             <div class="col-12">
                                 <label class="font-heading text-muted text-uppercase tracking-wider small d-block mb-2">Địa chỉ Email</label>
-                                <input name="txtEmail" class="form-control bg-black border-secondary text-white rounded-0 font-mono-data" placeholder="client@ducati-corse.vn" value="${sessionScope.currentUser.email}" required type="email"/>
+                                <input name="txtEmail" class="form-control bg-black border-secondary text-white rounded-0 font-mono-data" placeholder="client@ducati-showroom.vn" value="${sessionScope.currentUser.email}" required type="email"/>
                             </div>
                         </div>
                         

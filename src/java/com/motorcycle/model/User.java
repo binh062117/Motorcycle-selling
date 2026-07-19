@@ -1,5 +1,7 @@
 package com.motorcycle.model;
 
+import java.time.LocalDateTime;
+
 public class User extends BaseEntity {
     private String firstName;
     private String lastName;
@@ -11,6 +13,8 @@ public class User extends BaseEntity {
     private boolean active = true;
     private String resetToken;
     private String avatarUrl;
+    private String rememberTokenHash;
+    private LocalDateTime rememberExpiresAt;
 
     public User() {
     }
@@ -53,4 +57,8 @@ public class User extends BaseEntity {
     public void setResetToken(String resetToken) { this.resetToken = resetToken; touch(); }
     public String getAvatarUrl() { return avatarUrl; }
     public void setAvatarUrl(String avatarUrl) { this.avatarUrl = avatarUrl; touch(); }
+    public String getRememberTokenHash() { return rememberTokenHash; }
+    public void setRememberTokenHash(String rememberTokenHash) { this.rememberTokenHash = rememberTokenHash; touch(); }
+    public LocalDateTime getRememberExpiresAt() { return rememberExpiresAt; }
+    public void setRememberExpiresAt(LocalDateTime rememberExpiresAt) { this.rememberExpiresAt = rememberExpiresAt; touch(); }
 }

@@ -63,7 +63,7 @@ Motorcycle-selling/
 │       └── websocket/           # Optional real-time features
 │
 ├── web/                         # Frontend JSP & Static Assets (Tomcat Document Root)
-│   ├── admin/                   # Admin portal views (dashboard.jsp, manage-product.jsp, etc.)
+│   ├── admin/                   # Admin portal views (dashboard-view.jsp, manage-product.jsp, etc.)
 │   ├── assets/                  # CSS styles, JS scripts, and local images
 │   ├── common/                  # Reusable JSP fragments (header.jsp, footer.jsp)
 │   ├── WEB-INF/                 # Protected web resources, web.xml configurations
