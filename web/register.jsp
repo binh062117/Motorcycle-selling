@@ -17,8 +17,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <link href="${pageContext.request.contextPath}/assets/css/style.css" rel="stylesheet"/>
 </head>
-<body class="bg-dark text-white overflow-hidden">
-    <main class="position-relative min-vh-screen d-flex align-items-center justify-content-center justify-content-lg-end pe-lg-5 overflow-hidden" style="min-height: 100vh;">
+<body class="bg-dark text-white overflow-auto">
+    <main class="position-relative min-vh-screen d-flex align-items-start justify-content-center justify-content-lg-end pe-lg-5 py-4 py-lg-5" style="min-height: 100vh;">
         <div class="position-absolute inset-0 z-0 w-100 h-100">
             <img id="auth-bg" alt="Ducati Hangar Background" class="w-100 h-100 object-fit-cover opacity-25" style="object-fit: cover; filter: grayscale(100%); transition: transform 0.7s;" src="${pageContext.request.contextPath}/assets/img/auth-bg.svg"/>
             <div class="position-absolute inset-0 bg-gradient-to-r" style="background: linear-gradient(to right, var(--bg-dark) 0%, transparent 100%);"></div>
